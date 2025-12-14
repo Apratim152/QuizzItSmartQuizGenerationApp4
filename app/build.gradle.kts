@@ -4,13 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.quizzitsmartquizgenerationapp"
-    compileSdk {
-        version = release(36)
-    }
+    namespace = "com.example.quizzit"         // Must match package in Kotlin & manifest
+    compileSdk = 36                            // Correct syntax for Kotlin DSL
 
     defaultConfig {
-        applicationId = "com.example.quizzitsmartquizgenerationapp"
+        applicationId = "com.example.quizzit" // Must match namespace
         minSdk = 24
         targetSdk = 36
         versionCode = 1
@@ -28,10 +26,12 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
     kotlinOptions {
         jvmTarget = "11"
     }

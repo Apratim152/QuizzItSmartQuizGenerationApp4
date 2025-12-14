@@ -15,7 +15,7 @@ class MainActivity : AppCompatActivity() {
         // Find button
         val createQuizBtn = findViewById<Button>(R.id.btnCreateQuiz)
 
-        // On click → go to LoginActivity
+        // On click → go to LoginCredentials
         createQuizBtn.setOnClickListener {
             val intent = Intent(this, LoginCredentials::class.java)
             startActivity(intent)
