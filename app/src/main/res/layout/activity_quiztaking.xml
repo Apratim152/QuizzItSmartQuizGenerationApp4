@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Quiz Title -->
+    <TextView
+        android:id="@+id/tvQuizTitle"
+        android:text="Quiz Title"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="24dp" />
+
+    <!-- Question Number -->
+    <TextView
+        android:id="@+id/tvQuestionNumber"
+        android:text="Question 1 of 10"
+        android:textSize="16sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp" />
+
+    <!-- Question Text -->
+    <TextView
+        android:id="@+id/tvQuestionText"
+        android:text="Here goes the question text..."
+        android:textSize="18sp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp" />
+
+    <!-- Option 1 -->
+    <RadioButton
+        android:id="@+id/rbOption1"
+        android:text="Option 1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp" />
+
+    <!-- Option 2 -->
+    <RadioButton
+        android:id="@+id/rbOption2"
+        android:text="Option 2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp" />
+
+    <!-- Option 3 -->
+    <RadioButton
+        android:id="@+id/rbOption3"
+        android:text="Option 3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp" />
+
+    <!-- Option 4 -->
+    <RadioButton
+        android:id="@+id/rbOption4"
+        android:text="Option 4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp" />
+
+    <!-- Next Question Button -->
+    <Button
+        android:id="@+id/btnNextQuestion"
+        android:text="Next Question"
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <Button
+        android:id="@+id/btnSubmit"
+        android:text="Submit"
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+</LinearLayout>

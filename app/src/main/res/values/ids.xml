@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="spinnerQuizFormat" type="id" />
+    <item name="btnGenerateQuiz" type="id" />
+    <item name="spinnerQuizType" type="id" />
+    <item name="etNumQuestions" type="id" />
+    <item name="etContentUrl" type="id" />
+    <item name="spinnerDifficulty" type="id" />
+    <item name="etSubject" type="id" />
+    <item name="etTopic" type="id" />
+    <item name="rbOption4" type="id" />
+    <item name="btnNextQuestion" type="id" />
+    <item name="rbOption3" type="id" />
+    <item name="rbOption2" type="id" />
+    <item name="rbOption1" type="id" />
+    <item name="tvQuestionText" type="id" />
+    <item name="tvQuestionNumber" type="id" />
+    <item name="tvQuizTitle" type="id" />
+    <item name="loginButton" type="id" />
+    <item name="passwordEditText" type="id" />
+    <item name="usernameEditText" type="id" />
+    <item name="appNameTextView" type="id" />
+    <item name="loginLayout" type="id" />
+</resources>

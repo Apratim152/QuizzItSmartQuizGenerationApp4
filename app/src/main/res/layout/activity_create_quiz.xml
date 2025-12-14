@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Title -->
+    <TextView
+        android:text="Create New Quiz"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="24dp"/>
+
+    <!-- Quiz Topic -->
+    <EditText
+        android:id="@+id/etTopic"
+        android:hint="Topic (e.g.Algebra,Calculus,Rotation)"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:inputType="text" />
+
+    <!-- Quiz Subject -->
+    <EditText
+        android:id="@+id/etSubject"
+        android:hint="Subject (e.g., Math, Physics)"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:inputType="text" />
+
+    <!-- Difficulty Level -->
+    <Spinner
+        android:id="@+id/spinnerDifficulty"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Upload URL / File -->
+    <EditText
+        android:id="@+id/etContentUrl"
+        android:hint="Enter URL / Upload PDF"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:inputType="textUri" />
+
+    <!-- Number of Questions -->
+    <EditText
+        android:id="@+id/etNumQuestions"
+        android:hint="Total Questions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:inputType="number" />
+
+    <!-- Quiz Type -->
+    <Spinner
+        android:id="@+id/spinnerQuizType"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Timed / Untimed -->
+    <Spinner
+        android:id="@+id/spinnerQuizFormat"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp" />
+
+    <!-- Generate Quiz Button -->
+    <Button
+        android:id="@+id/btnGenerateQuiz"
+        android:text="Generate Quiz"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginBottom="24dp"/>
+
+</LinearLayout>
