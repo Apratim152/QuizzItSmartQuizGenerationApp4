@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">QuizzIt – Smart Quiz Generation App</string>
+    <string name="create_new_quiz">Create New Quiz</string>
 </resources>

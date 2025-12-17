@@ -1,78 +1,116 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="24dp"
-    android:gravity="center"
-    android:background="@color/white">
+    android:background="@color/bg_light">
 
-    <!-- Result Title -->
-    <TextView
-        android:id="@+id/resultTitleTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Quiz Result"
-        android:textSize="26sp"
-        android:textStyle="bold"
-        android:textColor="@color/purple_500"
-        android:layout_marginBottom="24dp"/>
-
-    <!-- Username -->
-    <TextView
-        android:id="@+id/usernameTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="User: Apratim"
-        android:textSize="18sp"
-        android:layout_marginBottom="12dp"/>
-
-    <!-- Score -->
-    <TextView
-        android:id="@+id/scoreTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Score: 8 / 10"
-        android:textSize="22sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="12dp"/>
-
-    <!-- Percentage -->
-    <TextView
-        android:id="@+id/percentageTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="80%"
-        android:textSize="20sp"
-        android:layout_marginBottom="24dp"/>
-
-    <!-- Result Message -->
-    <TextView
-        android:id="@+id/resultMessageTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Great Job!"
-        android:textSize="18sp"
-        android:textColor="@color/teal_700"
-        android:layout_marginBottom="36dp"/>
-
-    <!-- Buttons -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/homeButton"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Back to Home"
-        app:backgroundTint="@color/purple_500"
-        android:textColor="@android:color/white"
-        android:layout_marginBottom="12dp"/>
+        android:orientation="vertical"
+        android:padding="24dp"
+        android:gravity="center_horizontal">
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/retakeButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Retake Quiz"
-        app:backgroundTint="@color/teal_700"
-        android:textColor="@android:color/white"/>
+        <!-- Result Title -->
+        <TextView
+            android:id="@+id/resultTitleTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Quiz Result"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:textColor="@color/primary"
+            android:layout_marginBottom="24dp"/>
 
-</LinearLayout>
+        <!-- Result Card -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="12dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="#E0E0E0"
+            android:layout_marginBottom="32dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="24dp"
+                android:gravity="center">
+
+                <!-- Username -->
+                <TextView
+                    android:id="@+id/usernameTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="User: Apratim"
+                    android:textSize="16sp"
+                    android:textColor="@color/white"
+                    android:layout_marginBottom="12dp"/>
+
+                <!-- Score -->
+                <TextView
+                    android:id="@+id/scoreTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="8 / 10"
+                    android:textSize="36sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/primary"
+                    android:layout_marginBottom="4dp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Score"
+                    android:textSize="14sp"
+                    android:textColor="@color/white"
+                    android:layout_marginBottom="20dp"/>
+
+                <!-- Percentage -->
+                <TextView
+                    android:id="@+id/percentageTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="80%"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/primary"
+                    android:layout_marginBottom="20dp"/>
+
+                <!-- Result Message -->
+                <TextView
+                    android:id="@+id/resultMessageTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Great Job! 🎉"
+                    android:textSize="18sp"
+                    android:textColor="@color/primary"/>
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Buttons -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/homeButton"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:text="Back to Home"
+            android:textColor="@android:color/white"
+            app:cornerRadius="16dp"
+            app:backgroundTint="@color/primary"
+            android:layout_marginBottom="12dp"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/retakeButton"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:text="Retake Quiz"
+            android:textColor="@android:color/white"
+            app:cornerRadius="16dp"
+            app:backgroundTint="@color/primary"/>
+
+    </LinearLayout>
+</ScrollView>

@@ -1,10 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Core colors -->
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
 
-    <!-- Primary app colors -->
-    <color name="purple_500">#FF6200EE</color>
-    <color name="teal_700">#FF03DAC5</color>
+    <!-- Primary brand color -->
+    <color name="primary">#6C63FF</color>
+
+    <!-- Background -->
+    <color name="bg_light">#F6F7FB</color>
+
+    <!-- Text colors -->
+    <color name="text_primary">#1F2937</color>
+    <color name="text_secondary">#6B7280</color>
+
+    <!-- Basics -->
+    <color name="white">#FFFFFF</color>
+
 </resources>
