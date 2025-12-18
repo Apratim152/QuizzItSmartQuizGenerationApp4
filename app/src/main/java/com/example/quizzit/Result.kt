@@ -48,10 +48,7 @@ class ResultActivity : AppCompatActivity() {
         // Save result
         lifecycleScope.launch {
             val result = ResultEntity(
-                quizId = quizId,
-                score = score,
-                total = total,
-                xpEarned = xpEarned
+                quizId = quizId, score = score, total = total, xpEarned = xpEarned
             )
             db.resultDao().insertResult(result)
         }
