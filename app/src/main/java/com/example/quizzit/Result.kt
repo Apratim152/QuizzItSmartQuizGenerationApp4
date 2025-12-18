@@ -13,6 +13,7 @@ class ResultActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityResultBinding
     private lateinit var db: QuizDatabase
+
     private var quizId = 0
     private var score = 0
     private var total = 0
@@ -26,14 +27,15 @@ class ResultActivity : AppCompatActivity() {
 
         db = QuizDatabase.getDatabase(this)
 
-        // Receive extras
+        // Get data from Intent
         quizId = intent.getIntExtra("quizId", 0)
         score = intent.getIntExtra("score", 0)
         total = intent.getIntExtra("totalQuestions", 0)
         username = intent.getStringExtra("USERNAME") ?: "User"
+
         xpEarned = score * 10
 
-        // Set UI
+        // Set UI values
         binding.usernameTextView.text = "User: $username"
         binding.scoreTextView.text = "$score / $total"
         binding.percentageTextView.text = if (total > 0) "${(score * 100) / total}%" else "0%"
@@ -45,7 +47,7 @@ class ResultActivity : AppCompatActivity() {
             else -> "Keep Practicing! 💪"
         }
 
-        // Save result
+        // Save result to database (optional)
         lifecycleScope.launch {
             val result = ResultEntity(
                 quizId = quizId, score = score, total = total, xpEarned = xpEarned
@@ -53,7 +55,7 @@ class ResultActivity : AppCompatActivity() {
             db.resultDao().insertResult(result)
         }
 
-        // Button actions
+        // Back to home button
         binding.homeButton.setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
@@ -61,10 +63,12 @@ class ResultActivity : AppCompatActivity() {
             finish()
         }
 
+        // Retake quiz — goes back to QuizTakingActivity
         binding.retakeButton.setOnClickListener {
-            val intent = Intent(this, QuizTakingActivity::class.java)
-            intent.putExtra("USERNAME", username)
-            intent.putExtra("quizId", quizId)
+            val intent = Intent(this, QuizTakingActivity::class.java).apply {
+                putExtra("USERNAME", username)
+                putExtra("quizId", quizId)
+            }
             startActivity(intent)
             finish()
         }
