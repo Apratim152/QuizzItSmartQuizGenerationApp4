@@ -26,7 +26,7 @@ class CreateQuizActivity : AppCompatActivity() {
 
         val username = intent.getStringExtra("USERNAME") ?: "User"
 
-        // Views
+        // Find all views
         val etTopic = findViewById<TextInputEditText>(R.id.etTopic)
         val etSubject = findViewById<TextInputEditText>(R.id.etSubject)
         val spinnerDifficulty = findViewById<Spinner>(R.id.spinnerDifficulty)
@@ -35,19 +35,21 @@ class CreateQuizActivity : AppCompatActivity() {
         val spinnerQuizFormat = findViewById<Spinner>(R.id.spinnerQuizFormat)
         val btnGenerateQuiz = findViewById<MaterialButton>(R.id.btnGenerateQuiz)
 
-        // Populate spinners
+        // Populate Spinners
         spinnerDifficulty.adapter = ArrayAdapter(
-            this, android.R.layout.simple_spinner_dropdown_item, listOf("Easy", "Medium", "Hard")
+            this, android.R.layout.simple_spinner_dropdown_item,
+            listOf("Easy", "Medium", "Hard")
         )
         spinnerQuizType.adapter = ArrayAdapter(
-            this,
-            android.R.layout.simple_spinner_dropdown_item,
+            this, android.R.layout.simple_spinner_dropdown_item,
             listOf("MCQ", "True/False", "Short Answer")
         )
         spinnerQuizFormat.adapter = ArrayAdapter(
-            this, android.R.layout.simple_spinner_dropdown_item, listOf("Timed", "Untimed")
+            this, android.R.layout.simple_spinner_dropdown_item,
+            listOf("Timed", "Untimed")
         )
 
+        // Generate Quiz Button click
         btnGenerateQuiz.setOnClickListener {
             val topic = etTopic.text.toString().trim()
             val subject = etSubject.text.toString().trim()
@@ -57,37 +59,41 @@ class CreateQuizActivity : AppCompatActivity() {
             val quizFormat = spinnerQuizFormat.selectedItem.toString()
 
             if (topic.isEmpty() || subject.isEmpty() || numQuestions <= 0) {
-                Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Please fill all required fields", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            // Create quiz and questions
-            val newQuiz = QuizEntity(
-                title = topic,
-                subject = subject,
-                difficulty = difficulty,
-                totalQuestions = numQuestions,
-                quizType = quizType,
-                format = quizFormat
-            )
-
             lifecycleScope.launch {
+                // Create QuizEntity
+                val newQuiz = QuizEntity(
+                    title = topic,
+                    subject = subject,
+                    difficulty = difficulty,
+                    totalQuestions = numQuestions,
+                    quizType = quizType,
+                    format = quizFormat
+                )
+
+                // Insert quiz and get its ID
                 val quizId = db.quizDao().insertQuiz(newQuiz).toInt()
 
-                val questions = (1..numQuestions).map { i ->
+                // Create placeholder questions
+                val questions = (1..numQuestions).map { index ->
                     QuestionEntity(
                         quizOwnerId = quizId,
-                        questionText = "Question $i placeholder",
+                        questionText = "Question $index placeholder",
                         optionA = "Option A",
                         optionB = "Option B",
                         optionC = "Option C",
                         optionD = "Option D",
-                        correctOption = "A"
+                        correctOption = "Option A"
                     )
                 }
+
+                // Insert questions into DB
                 db.questionDao().insertQuestions(questions)
 
-                // Navigate to QuizTakingActivity
+                // Start QuizTakingActivity after DB inserts
                 val intent = Intent(this@CreateQuizActivity, QuizTakingActivity::class.java).apply {
                     putExtra("quizId", quizId)
                     putExtra("USERNAME", username)

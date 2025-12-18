@@ -39,9 +39,10 @@ class QuizTakingActivity : AppCompatActivity() {
 
         // Load questions from DB
         lifecycleScope.launch {
-            questionList = db.questionDao(). getQuestionsByQuizId(quizId)
+            questionList = db.questionDao().getQuestionsByQuizId(quizId)
             if (questionList.isEmpty()) {
-                Toast.makeText(this@QuizTakingActivity, "No questions found!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@QuizTakingActivity, "No questions found!", Toast.LENGTH_SHORT)
+                    .show()
                 finish()
             } else {
                 showQuestion()
@@ -68,7 +69,8 @@ class QuizTakingActivity : AppCompatActivity() {
 
     private fun showQuestion() {
         val question = questionList[currentQuestionIndex]
-        binding.tvQuestionNumber.text = "Question ${currentQuestionIndex + 1} of ${questionList.size}"
+        binding.tvQuestionNumber.text =
+            "Question ${currentQuestionIndex + 1} of ${questionList.size}"
         binding.tvQuestionText.text = question.questionText
         binding.rbOption1.text = question.optionA
         binding.rbOption2.text = question.optionB
