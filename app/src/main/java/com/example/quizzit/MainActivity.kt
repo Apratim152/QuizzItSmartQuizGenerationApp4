@@ -1,10 +1,11 @@
 package com.example.quizzit
-import android.content.Intent
+
 import android.os.Bundle
-import android.widget.Button
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-
-
+import androidx.lifecycle.lifecycleScope
+import com.example.quizzit.gemini.GeminiService
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
@@ -12,13 +13,19 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Find button
-        val createQuizBtn = findViewById<Button>(R.id.btnCreateQuiz)
+        testGemini()
+    }
 
-        // On click → go to LoginCredentials
-        createQuizBtn.setOnClickListener {
-            val intent = Intent(this, LoginCredentials::class.java)
-            startActivity(intent)
+    private fun testGemini() {
+        lifecycleScope.launch {
+            try {
+                val result = GeminiService.generateText(
+                    "Generate 1 simple MCQ question on Java"
+                )
+                Log.d("GEMINI_TEST", result)
+            } catch (e: Exception) {
+                Log.e("GEMINI_TEST", "Error", e)
+            }
         }
     }
 }

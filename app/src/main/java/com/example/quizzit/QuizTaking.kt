@@ -4,81 +4,89 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.example.quizzit.databinding.ActivityQuiztakingBinding
+import androidx.lifecycle.lifecycleScope
+import com.example.quizzit.data.database.QuizDatabase
 import com.example.quizzit.data.entity.QuestionEntity
+import com.example.quizzit.databinding.ActivityQuiztakingBinding
+import kotlinx.coroutines.launch
 
 class QuizTakingActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityQuiztakingBinding
+    private lateinit var db: QuizDatabase
 
-    private var questionList: MutableList<QuestionEntity> = mutableListOf()
+    private var questionList: List<QuestionEntity> = emptyList()
     private var currentQuestionIndex = 0
     private var score = 0
     private var quizId = 0
     private var username: String? = null
-    private var totalQuestions = 5 // default placeholder questions
+    private var totalQuestions = 5 // default number of dummy questions
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityQuiztakingBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Retrieve extras
+        db = QuizDatabase.getDatabase(this)
+
         quizId = intent.getIntExtra("quizId", 0)
-        username = intent.getStringExtra("USERNAME")
+        username = intent.getStringExtra("USERNAME") ?: "User"
+        totalQuestions = intent.getIntExtra("totalQuestions", 5)
 
-        // Create placeholder questions if DB is empty / not yet integrated
-        generatePlaceholderQuestions()
+        // Load questions (dummy placeholders if DB empty)
+        lifecycleScope.launch {
+            loadQuestions()
+            showQuestion(currentQuestionIndex)
+        }
 
-        // Display first question
-        showQuestion()
-
-        // Next question button
         binding.btnNextQuestion.setOnClickListener {
             checkAnswer()
             if (currentQuestionIndex < questionList.size - 1) {
                 currentQuestionIndex++
-                showQuestion()
+                showQuestion(currentQuestionIndex)
             } else {
-                goToResultActivity()
+                goToResult()
             }
         }
 
-        // Submit button
         binding.btnSubmit.setOnClickListener {
             checkAnswer()
-            goToResultActivity()
+            goToResult()
         }
     }
 
-    private fun generatePlaceholderQuestions() {
-        questionList.clear()
-        for (i in 1..totalQuestions) {
-            questionList.add(
+    // Load questions from DB; create dummy if empty
+    private suspend fun loadQuestions() {
+        val dbQuestions = db.questionDao().getQuestionsByQuizId(quizId)
+        questionList = if (dbQuestions.isNotEmpty()) {
+            dbQuestions
+        } else {
+            // Generate dummy questions
+            (1..totalQuestions).map { index ->
                 QuestionEntity(
-                    questionId = i,
                     quizOwnerId = quizId,
-                    questionText = "Question $i placeholder",
+                    questionText = "Question $index",
                     optionA = "Option A",
                     optionB = "Option B",
                     optionC = "Option C",
                     optionD = "Option D",
-                    correctOption = "A" // arbitrary correct answer for now
+                    correctOption = "Option A" // matches text
                 )
-            )
+            }
         }
     }
 
-    private fun showQuestion() {
-        val question = questionList[currentQuestionIndex]
-        binding.tvQuestionNumber.text = "Question ${currentQuestionIndex + 1} of ${questionList.size}"
+    private fun showQuestion(index: Int) {
+        val question = questionList.getOrNull(index) ?: return
+
+        binding.tvQuestionNumber.text = "Question ${index + 1} of ${questionList.size}"
         binding.tvQuestionText.text = question.questionText
+
         binding.rbOption1.text = question.optionA
         binding.rbOption2.text = question.optionB
         binding.rbOption3.text = question.optionC
         binding.rbOption4.text = question.optionD
 
-        // Clear previous selection
         binding.rbOption1.isChecked = false
         binding.rbOption2.isChecked = false
         binding.rbOption3.isChecked = false
@@ -86,18 +94,18 @@ class QuizTakingActivity : AppCompatActivity() {
     }
 
     private fun checkAnswer() {
-        val question = questionList[currentQuestionIndex]
-        val selected = when {
-            binding.rbOption1.isChecked -> "A"
-            binding.rbOption2.isChecked -> "B"
-            binding.rbOption3.isChecked -> "C"
-            binding.rbOption4.isChecked -> "D"
+        val question = questionList.getOrNull(currentQuestionIndex) ?: return
+        val selectedText = when {
+            binding.rbOption1.isChecked -> binding.rbOption1.text.toString()
+            binding.rbOption2.isChecked -> binding.rbOption2.text.toString()
+            binding.rbOption3.isChecked -> binding.rbOption3.text.toString()
+            binding.rbOption4.isChecked -> binding.rbOption4.text.toString()
             else -> ""
         }
-        if (selected == question.correctOption) score++
+        if (selectedText == question.correctOption) score++
     }
 
-    private fun goToResultActivity() {
+    private fun goToResult() {
         val intent = Intent(this, ResultActivity::class.java).apply {
             putExtra("score", score)
             putExtra("totalQuestions", questionList.size)
