@@ -1,4 +1,4 @@
-package com.example.quizzitsmartquizgenerationapp
+package com.example.quizzit
 
 import org.junit.Test
 
