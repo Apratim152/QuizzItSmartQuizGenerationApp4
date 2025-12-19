@@ -89,7 +89,16 @@
             android:textColor="@android:color/white"
             app:backgroundTint="#6C63FF"
             app:cornerRadius="14dp"
-            android:layout_marginBottom="24dp"/>
+            android:layout_marginBottom="16dp"/>
+
+        <!-- ProgressBar (NEW - Added here) -->
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:visibility="gone"
+            android:layout_marginBottom="16dp"/>
 
         <!-- RecyclerView for Generated Questions -->
         <androidx.recyclerview.widget.RecyclerView
@@ -98,6 +107,7 @@
             android:layout_height="300dp"
             android:layout_marginBottom="16dp"
             android:scrollbars="vertical"/>
+
 
         <!-- Save Quiz Button -->
         <com.google.android.material.button.MaterialButton

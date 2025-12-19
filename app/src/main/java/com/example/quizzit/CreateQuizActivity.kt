@@ -6,7 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.quizzit.api.QuizRequest
+import com.example.quizzit.api.QuizHelper
 import com.example.quizzit.api.QuizService
 import com.example.quizzit.data.database.QuizDatabase
 import com.example.quizzit.data.entity.QuestionEntity
@@ -16,7 +16,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-
 class CreateQuizActivity : AppCompatActivity() {
 
     private lateinit var etQuizTitle: EditText
@@ -24,6 +23,7 @@ class CreateQuizActivity : AppCompatActivity() {
     private lateinit var btnGenerateQuestions: Button
     private lateinit var btnSaveQuiz: Button
     private lateinit var rvGeneratedQuestions: RecyclerView
+    private lateinit var progressBar: ProgressBar
 
     private val generatedQuestions = mutableListOf<QuestionEntity>()
     private lateinit var adapter: GeneratedQuestionsAdapter
@@ -32,25 +32,30 @@ class CreateQuizActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_quiz)
 
+        // Initialize views
         etQuizTitle = findViewById(R.id.etQuizTitle)
         etTopicOrPDF = findViewById(R.id.etTopicOrPDF)
         btnGenerateQuestions = findViewById(R.id.btnGenerateQuestions)
         btnSaveQuiz = findViewById(R.id.btnSaveQuiz)
         rvGeneratedQuestions = findViewById(R.id.rvGeneratedQuestions)
+        progressBar = findViewById(R.id.progressBar)
 
+        // Setup RecyclerView
         adapter = GeneratedQuestionsAdapter(generatedQuestions)
         rvGeneratedQuestions.layoutManager = LinearLayoutManager(this)
         rvGeneratedQuestions.adapter = adapter
 
+        // Generate questions button
         btnGenerateQuestions.setOnClickListener {
-            val topicText = etTopicOrPDF.text.toString().trim()
-            if (topicText.isEmpty()) {
+            val topic = etTopicOrPDF.text.toString().trim()
+            if (topic.isEmpty()) {
                 Toast.makeText(this, "Enter a topic or PDF URL", Toast.LENGTH_SHORT).show()
             } else {
-                generateQuestions(topicText)
+                generateQuestions(topic)
             }
         }
 
+        // Save quiz button
         btnSaveQuiz.setOnClickListener {
             saveQuizToDatabase()
         }
@@ -59,29 +64,40 @@ class CreateQuizActivity : AppCompatActivity() {
     private fun generateQuestions(topic: String) {
         lifecycleScope.launch {
             try {
+                // Clear previous questions
                 generatedQuestions.clear()
                 adapter.notifyDataSetChanged()
+                btnGenerateQuestions.isEnabled = false
+                progressBar.visibility = ProgressBar.VISIBLE
 
-                val response = QuizService.quizApi.generateQuiz(
-                    QuizRequest(topic, 5)
-                )
+                // Create request
+                val request = QuizHelper.createQuizRequest(topic)
+
+                // Call Gemini API
+                val response = QuizService.quizApi.generateQuiz(request)
 
                 if (response.isSuccessful) {
-                    response.body()?.cards?.forEach { card ->
-                        generatedQuestions.add(
-                            QuestionEntity(
-                                quizOwnerId = 0,
-                                questionText = card.question,
-                                optionA = card.choices.getOrElse(0) { "" },
-                                optionB = card.choices.getOrElse(1) { "" },
-                                optionC = card.choices.getOrElse(2) { "" },
-                                optionD = card.choices.getOrElse(3) { "" },
-                                correctOption = listOf("A", "B", "C", "D")
-                                    .getOrElse(card.correct_index) { "" }
+                    val parsedResponse = response.body()?.let { QuizHelper.parseQuizResponse(it) }
+
+                    if (parsedResponse?.cards.isNullOrEmpty()) {
+                        Toast.makeText(this@CreateQuizActivity, "No questions generated", Toast.LENGTH_SHORT).show()
+                    } else {
+                        parsedResponse?.cards?.forEach { card ->
+                            generatedQuestions.add(
+                                QuestionEntity(
+                                    quizOwnerId = 0,
+                                    questionText = card.question,
+                                    optionA = card.choices.getOrElse(0) { "" },
+                                    optionB = card.choices.getOrElse(1) { "" },
+                                    optionC = card.choices.getOrElse(2) { "" },
+                                    optionD = card.choices.getOrElse(3) { "" },
+                                    correctOption = listOf("A", "B", "C", "D")
+                                        .getOrElse(card.correct_index) { "" }
+                                )
                             )
-                        )
+                        }
+                        adapter.notifyDataSetChanged()
                     }
-                    adapter.notifyDataSetChanged()
                 } else {
                     Toast.makeText(
                         this@CreateQuizActivity,
@@ -89,21 +105,18 @@ class CreateQuizActivity : AppCompatActivity() {
                         Toast.LENGTH_LONG
                     ).show()
                 }
-
             } catch (e: Exception) {
                 e.printStackTrace()
-                Toast.makeText(
-                    this@CreateQuizActivity,
-                    "Error: ${e.message}",
-                    Toast.LENGTH_LONG
-                ).show()
+                Toast.makeText(this@CreateQuizActivity, "Error: ${e.message}", Toast.LENGTH_LONG).show()
+            } finally {
+                btnGenerateQuestions.isEnabled = true
+                progressBar.visibility = ProgressBar.GONE
             }
         }
     }
 
     private fun saveQuizToDatabase() {
         val quizTitle = etQuizTitle.text.toString().trim()
-
         if (quizTitle.isEmpty() || generatedQuestions.isEmpty()) {
             Toast.makeText(this, "Fill details and generate questions", Toast.LENGTH_SHORT).show()
             return
@@ -121,11 +134,8 @@ class CreateQuizActivity : AppCompatActivity() {
                 format = ""
             )
 
-            val quizId = withContext(Dispatchers.IO) {
-                db.quizDao().insertQuiz(quiz).toInt()
-            }
-
             withContext(Dispatchers.IO) {
+                val quizId = db.quizDao().insertQuiz(quiz).toInt()
                 db.questionDao().insertQuestions(
                     generatedQuestions.map { it.copy(quizOwnerId = quizId) }
                 )
