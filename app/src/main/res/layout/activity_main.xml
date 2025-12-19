@@ -11,7 +11,7 @@
         android:orientation="vertical"
         android:padding="20dp">
 
-
+        <!-- Title -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -31,7 +31,7 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="32dp" />
 
-
+        <!-- Create Quiz Card -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -75,10 +75,25 @@
                     app:backgroundTint="#6C63FF"
                     app:cornerRadius="14dp"
                     app:elevation="6dp" />
+
+                <!-- Test Gemini Button -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnTestGemini"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Test AI Quiz Generation"
+                    android:textSize="16sp"
+                    android:textAllCaps="false"
+                    android:textColor="@android:color/white"
+                    android:layout_marginTop="12dp"
+                    app:backgroundTint="#FF5722"
+                    app:cornerRadius="14dp"
+                    app:elevation="6dp" />
+
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-
+        <!-- Leaderboard Card -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -100,7 +115,7 @@
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:textColor="#6C63FF"
-                android:layout_marginBottom="12dp" />
+                    android:layout_marginBottom="12dp" />
 
                 <TextView
                     android:id="@+id/tvEmptyLeaderboard"

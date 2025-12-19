@@ -1,106 +1,139 @@
 package com.example.quizzit
 
-import android.content.Intent
 import android.os.Bundle
-import android.widget.ArrayAdapter
-import android.widget.Spinner
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.quizzit.api.QuizRequest
+import com.example.quizzit.api.QuizService
 import com.example.quizzit.data.database.QuizDatabase
 import com.example.quizzit.data.entity.QuestionEntity
 import com.example.quizzit.data.entity.QuizEntity
-import com.google.android.material.button.MaterialButton
-import com.google.android.material.textfield.TextInputEditText
+import com.example.quizzit.ui.GeneratedQuestionsAdapter
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+
 
 class CreateQuizActivity : AppCompatActivity() {
 
-    private lateinit var db: QuizDatabase
+    private lateinit var etQuizTitle: EditText
+    private lateinit var etTopicOrPDF: EditText
+    private lateinit var btnGenerateQuestions: Button
+    private lateinit var btnSaveQuiz: Button
+    private lateinit var rvGeneratedQuestions: RecyclerView
+
+    private val generatedQuestions = mutableListOf<QuestionEntity>()
+    private lateinit var adapter: GeneratedQuestionsAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_quiz)
 
-        db = QuizDatabase.getDatabase(this)
+        etQuizTitle = findViewById(R.id.etQuizTitle)
+        etTopicOrPDF = findViewById(R.id.etTopicOrPDF)
+        btnGenerateQuestions = findViewById(R.id.btnGenerateQuestions)
+        btnSaveQuiz = findViewById(R.id.btnSaveQuiz)
+        rvGeneratedQuestions = findViewById(R.id.rvGeneratedQuestions)
 
-        val username = intent.getStringExtra("USERNAME") ?: "User"
+        adapter = GeneratedQuestionsAdapter(generatedQuestions)
+        rvGeneratedQuestions.layoutManager = LinearLayoutManager(this)
+        rvGeneratedQuestions.adapter = adapter
 
-        // Find all views
-        val etTopic = findViewById<TextInputEditText>(R.id.etTopic)
-        val etSubject = findViewById<TextInputEditText>(R.id.etSubject)
-        val spinnerDifficulty = findViewById<Spinner>(R.id.spinnerDifficulty)
-        val etNumQuestions = findViewById<TextInputEditText>(R.id.etNumQuestions)
-        val spinnerQuizType = findViewById<Spinner>(R.id.spinnerQuizType)
-        val spinnerQuizFormat = findViewById<Spinner>(R.id.spinnerQuizFormat)
-        val btnGenerateQuiz = findViewById<MaterialButton>(R.id.btnGenerateQuiz)
-
-        // Populate Spinners
-        spinnerDifficulty.adapter = ArrayAdapter(
-            this, android.R.layout.simple_spinner_dropdown_item,
-            listOf("Easy", "Medium", "Hard")
-        )
-        spinnerQuizType.adapter = ArrayAdapter(
-            this, android.R.layout.simple_spinner_dropdown_item,
-            listOf("MCQ", "True/False", "Short Answer")
-        )
-        spinnerQuizFormat.adapter = ArrayAdapter(
-            this, android.R.layout.simple_spinner_dropdown_item,
-            listOf("Timed", "Untimed")
-        )
-
-        // Generate Quiz Button click
-        btnGenerateQuiz.setOnClickListener {
-            val topic = etTopic.text.toString().trim()
-            val subject = etSubject.text.toString().trim()
-            val numQuestions = etNumQuestions.text.toString().toIntOrNull() ?: 0
-            val difficulty = spinnerDifficulty.selectedItem.toString()
-            val quizType = spinnerQuizType.selectedItem.toString()
-            val quizFormat = spinnerQuizFormat.selectedItem.toString()
-
-            if (topic.isEmpty() || subject.isEmpty() || numQuestions <= 0) {
-                Toast.makeText(this, "Please fill all required fields", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
+        btnGenerateQuestions.setOnClickListener {
+            val topicText = etTopicOrPDF.text.toString().trim()
+            if (topicText.isEmpty()) {
+                Toast.makeText(this, "Enter a topic or PDF URL", Toast.LENGTH_SHORT).show()
+            } else {
+                generateQuestions(topicText)
             }
+        }
 
-            lifecycleScope.launch {
-                // Create QuizEntity
-                val newQuiz = QuizEntity(
-                    title = topic,
-                    subject = subject,
-                    difficulty = difficulty,
-                    totalQuestions = numQuestions,
-                    quizType = quizType,
-                    format = quizFormat
+        btnSaveQuiz.setOnClickListener {
+            saveQuizToDatabase()
+        }
+    }
+
+    private fun generateQuestions(topic: String) {
+        lifecycleScope.launch {
+            try {
+                generatedQuestions.clear()
+                adapter.notifyDataSetChanged()
+
+                val response = QuizService.quizApi.generateQuiz(
+                    QuizRequest(topic, 5)
                 )
 
-                // Insert quiz and get its ID
-                val quizId = db.quizDao().insertQuiz(newQuiz).toInt()
-
-                // Create placeholder questions
-                val questions = (1..numQuestions).map { index ->
-                    QuestionEntity(
-                        quizOwnerId = quizId,
-                        questionText = "Question $index placeholder",
-                        optionA = "Option A",
-                        optionB = "Option B",
-                        optionC = "Option C",
-                        optionD = "Option D",
-                        correctOption = "Option A"
-                    )
+                if (response.isSuccessful) {
+                    response.body()?.cards?.forEach { card ->
+                        generatedQuestions.add(
+                            QuestionEntity(
+                                quizOwnerId = 0,
+                                questionText = card.question,
+                                optionA = card.choices.getOrElse(0) { "" },
+                                optionB = card.choices.getOrElse(1) { "" },
+                                optionC = card.choices.getOrElse(2) { "" },
+                                optionD = card.choices.getOrElse(3) { "" },
+                                correctOption = listOf("A", "B", "C", "D")
+                                    .getOrElse(card.correct_index) { "" }
+                            )
+                        )
+                    }
+                    adapter.notifyDataSetChanged()
+                } else {
+                    Toast.makeText(
+                        this@CreateQuizActivity,
+                        "API Error ${response.code()}",
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
 
-                // Insert questions into DB
-                db.questionDao().insertQuestions(questions)
-
-                // Start QuizTakingActivity after DB inserts
-                val intent = Intent(this@CreateQuizActivity, QuizTakingActivity::class.java).apply {
-                    putExtra("quizId", quizId)
-                    putExtra("USERNAME", username)
-                }
-                startActivity(intent)
-                finish()
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Toast.makeText(
+                    this@CreateQuizActivity,
+                    "Error: ${e.message}",
+                    Toast.LENGTH_LONG
+                ).show()
             }
+        }
+    }
+
+    private fun saveQuizToDatabase() {
+        val quizTitle = etQuizTitle.text.toString().trim()
+
+        if (quizTitle.isEmpty() || generatedQuestions.isEmpty()) {
+            Toast.makeText(this, "Fill details and generate questions", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        lifecycleScope.launch {
+            val db = QuizDatabase.getDatabase(this@CreateQuizActivity)
+
+            val quiz = QuizEntity(
+                title = quizTitle,
+                subject = etTopicOrPDF.text.toString(),
+                difficulty = "",
+                totalQuestions = generatedQuestions.size,
+                quizType = "",
+                format = ""
+            )
+
+            val quizId = withContext(Dispatchers.IO) {
+                db.quizDao().insertQuiz(quiz).toInt()
+            }
+
+            withContext(Dispatchers.IO) {
+                db.questionDao().insertQuestions(
+                    generatedQuestions.map { it.copy(quizOwnerId = quizId) }
+                )
+            }
+
+            Toast.makeText(this@CreateQuizActivity, "Quiz Saved!", Toast.LENGTH_SHORT).show()
+            generatedQuestions.clear()
+            adapter.notifyDataSetChanged()
         }
     }
 }
