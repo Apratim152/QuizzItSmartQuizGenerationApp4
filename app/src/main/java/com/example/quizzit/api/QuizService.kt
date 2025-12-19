@@ -8,7 +8,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 object QuizService {
 
     private const val BASE_URL = "https://generativelanguage.googleapis.com/"
-    private const val API_KEY = "AIzaSyDSXhT1qUIrboXnzeku_APDfwdApK_xyD8"
+    private const val API_KEY = "AIzaSyBH4nS7r9aWXgTOhOpyZZYMC0NBOTgUAzA"
 
     private val client = OkHttpClient.Builder()
         .addInterceptor { chain ->
