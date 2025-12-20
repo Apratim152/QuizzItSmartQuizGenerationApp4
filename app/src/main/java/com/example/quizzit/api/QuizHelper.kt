@@ -25,6 +25,7 @@ object QuizHelper {
         return QuizRequest(
             contents = listOf(
                 Content(
+                    role = "user",
                     parts = listOf(Part(text = prompt))
                 )
             )
@@ -37,11 +38,8 @@ object QuizHelper {
             val text = response.candidates.firstOrNull()?.content?.parts?.firstOrNull()?.text
                 ?: return null
 
-            // Clean the response (remove markdown code blocks if present)
-            val cleanedText = text
-                .replace("```json", "")
-                .replace("```", "")
-                .trim()
+            // Clean the response (remove extra whitespace)
+            val cleanedText = text.trim()
 
             // Parse the JSON array into QuizCard objects
             val gson = Gson()

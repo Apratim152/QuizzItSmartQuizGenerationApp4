@@ -1,41 +1,37 @@
 package com.example.quizzit.api
 
-// Gemini API Request format
-data class QuizRequest(
-    val contents: List<Content>
-)
-
+// Represents a message content for Gemini API
 data class Content(
+    val role: String,
     val parts: List<Part>
 )
 
+// Represents a part of the content (usually text)
 data class Part(
     val text: String
 )
 
-// Gemini API Response format
-data class QuizResponse(
-    val candidates: List<Candidate>
-)
-
-data class Candidate(
-    val content: Content,
-    val finishReason: String? = null,
-    val safetyRatings: List<SafetyRating>? = null
-)
-
-data class SafetyRating(
-    val category: String,
-    val probability: String
-)
-
-// Your app's internal quiz models
+// Represents a single quiz card returned by Gemini
 data class QuizCard(
     val question: String,
     val choices: List<String>,
     val correct_index: Int
 )
 
+// Parsed response wrapper
 data class ParsedQuizResponse(
     val cards: List<QuizCard>
+)
+
+// API response models
+data class QuizRequest(
+    val contents: List<Content>
+)
+
+data class QuizResponse(
+    val candidates: List<Candidate>
+)
+
+data class Candidate(
+    val content: Content
 )
