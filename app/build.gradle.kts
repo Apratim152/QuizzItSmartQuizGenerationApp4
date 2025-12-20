@@ -17,16 +17,14 @@ android {
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        // ✅ Read Gemini API Key from local.properties (NOT gradle.properties)
+        // ✅ Read Gemini API Key from local.properties
         val localProperties = Properties()
         val localPropertiesFile = rootProject.file("local.properties")
         if (localPropertiesFile.exists()) {
             localProperties.load(FileInputStream(localPropertiesFile))
         }
-
         buildConfigField(
             "String",
             "GEMINI_API_KEY",
@@ -60,7 +58,6 @@ android {
 }
 
 dependencies {
-
     // ---------- Core Android ----------
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
@@ -68,12 +65,15 @@ dependencies {
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
 
+    // ---------- Google AI (Gemini) - NO Retrofit/OkHttp needed! ----------
+    implementation("com.google.ai.client.generativeai:generativeai:0.9.0")
+
     // ---------- Testing ----------
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
-    // ---------- Room ----------
+    // ---------- Room Database ----------
     implementation("androidx.room:room-runtime:2.6.1")
     kapt("androidx.room:room-compiler:2.6.1")
     implementation("androidx.room:room-ktx:2.6.1")
@@ -93,14 +93,12 @@ dependencies {
     // ---------- CardView ----------
     implementation("androidx.cardview:cardview:1.0.0")
 
-    // ---------- OkHttp (Gemini) ----------
-    implementation("com.squareup.okhttp3:okhttp:4.12.0")
-
-    // ---------- Logging ----------
+    // ---------- Logging (Optional) ----------
     implementation("com.jakewharton.timber:timber:5.0.1")
 
-    // ---------- Retrofit ----------
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
-    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
+    // ❌ REMOVED - Not needed for Gemini API:
+    // - Retrofit
+    // - OkHttp
+    // - Gson Converter
+    // The Google AI SDK handles all networking internally!
 }

@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:fillViewport="true">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="24dp">
+
+        <!-- Title -->
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Generate AI Quiz"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:textColor="@color/cardview_dark_background"
+            android:gravity="center"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="16dp" />
+
+        <!-- Topic Input -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilTopic"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="Quiz Topic"
+            app:boxBackgroundMode="outline"
+            app:layout_constraintTop_toBottomOf="@id/tvTitle"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="32dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etTopic"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:maxLines="1" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Difficulty Spinner -->
+        <TextView
+            android:id="@+id/tvDifficultyLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Difficulty Level"
+            android:textSize="14sp"
+            android:textColor="@color/cardview_dark_background"
+            app:layout_constraintTop_toBottomOf="@id/tilTopic"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="24dp" />
+
+        <Spinner
+            android:id="@+id/spinnerDifficulty"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:entries="@array/difficulty_levels"
+            android:padding="12dp"
+            android:background="@android:drawable/edit_text"
+            app:layout_constraintTop_toBottomOf="@id/tvDifficultyLabel"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="8dp" />
+
+        <!-- Question Count Input -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilQuestionCount"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="Number of Questions (1-20)"
+            app:boxBackgroundMode="outline"
+            app:layout_constraintTop_toBottomOf="@id/spinnerDifficulty"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="24dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etQuestionCount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:text="5"
+                android:maxLines="1" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Progress Bar -->
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/tilQuestionCount"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="32dp" />
+
+        <!-- Generate Button -->
+        <Button
+            android:id="@+id/btnGenerateQuiz"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:text="Generate Quiz with AI"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintTop_toBottomOf="@id/progressBar"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="32dp" />
+
+        <!-- Info Text -->
+        <TextView
+            android:id="@+id/tvInfo"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="AI will generate personalized quiz questions based on your topic and difficulty level."
+            android:textSize="12sp"
+            android:textColor="@android:color/darker_gray"
+            android:gravity="center"
+            app:layout_constraintTop_toBottomOf="@id/btnGenerateQuiz"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="16dp" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

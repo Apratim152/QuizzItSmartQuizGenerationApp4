@@ -3,67 +3,100 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/bg_light">
+    android:background="@color/bg_light"
+    android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="24dp">
+        android:padding="20dp">
 
-        <!-- App Title -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="QuizzIt"
-            android:textSize="28sp"
-            android:textStyle="bold"
-            android:textColor="#2E2D32"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="8dp"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Smart Quiz Generation App"
-            android:textSize="16sp"
-            android:textColor="#3F3D56"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="32dp" />
-
-        <!-- Create Quiz Button -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnCreateQuiz"
+        <!-- Header Section -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Create Quiz"
-            android:textColor="@android:color/white"
-            android:textAllCaps="false"
-            app:backgroundTint="#6C63FF"
-            app:cornerRadius="14dp"
-            android:layout_marginBottom="16dp" />
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_marginTop="32dp"
+            android:layout_marginBottom="40dp">
 
-        <!-- Test Gemini Button -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnTestGemini"
+            <!-- Logo/Icon Placeholder -->
+            <View
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:background="@drawable/circle_gradient"
+                android:layout_marginBottom="16dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="QuizzIt"
+                android:textSize="32sp"
+                android:textStyle="bold"
+                android:textColor="#2E2D32"
+                android:letterSpacing="0.02"
+                android:layout_marginBottom="4dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="AI-Powered Quiz Generation"
+                android:textSize="14sp"
+                android:textColor="#6C63FF"
+                android:alpha="0.8"/>
+        </LinearLayout>
+
+        <!-- Create Quiz Card -->
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Test AI Quiz Generation"
-            android:textColor="@android:color/white"
-            android:textAllCaps="false"
-            app:backgroundTint="#FF5722"
-            app:cornerRadius="14dp"
-            android:layout_marginBottom="24dp" />
+            app:cardCornerRadius="20dp"
+            app:cardElevation="8dp"
+            android:layout_marginBottom="20dp"
+            app:cardBackgroundColor="@android:color/white">
 
-        <!-- Optional info / instructions -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Tap 'Create Quiz' to make a new quiz.\nTap 'Test AI Quiz Generation' to see an example question."
-            android:textColor="#3F3D56"
-            android:textSize="14sp"
-            android:layout_gravity="center_horizontal"
-            android:gravity="center" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="24dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="✨ Create New Quiz"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:textColor="#2E2D32"
+                    android:layout_marginBottom="8dp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Generate intelligent quizzes on any topic using AI"
+                    android:textSize="14sp"
+                    android:textColor="#666666"
+                    android:layout_marginBottom="20dp"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnCreateQuiz"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:text="Start Creating"
+                    android:textColor="@android:color/white"
+                    android:textAllCaps="false"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:backgroundTint="#6C63FF"
+                    app:cornerRadius="16dp"
+                    app:icon="@android:drawable/ic_input_add"
+                    app:iconGravity="textStart"
+                    app:iconTint="@android:color/white"/>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+
 
     </LinearLayout>
 </ScrollView>
