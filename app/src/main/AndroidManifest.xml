@@ -17,7 +17,7 @@
 
         <!-- App Activities -->
         <activity
-            android:name=".ResultActivity"
+            android:name=".Result"
             android:exported="false" />
         <activity
             android:name=".QuizTakingActivity"
@@ -26,9 +26,7 @@
         <activity
             android:name=".QuizGenerationActivity"
             android:exported="false" />
-        <activity
-            android:name=".CreateQuizActivity"
-            android:exported="false" />
+
         <activity
             android:name=".LoginCredentials"
             android:exported="false" />

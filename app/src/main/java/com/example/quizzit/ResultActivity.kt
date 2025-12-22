@@ -3,11 +3,12 @@ package com.example.quizzit
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.quizzit.data.database.QuizDatabase
-import com.example.quizzit.data.entity.ResultEntity
 import com.example.quizzit.databinding.ActivityResultBinding
+import com.example.quizzit.data.entity.Result
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -49,6 +50,13 @@ class ResultActivity : AppCompatActivity() {
 
         // Setup buttons
         setupButtons()
+
+        // Handle back button with OnBackPressedDispatcher
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                navigateToHome()
+            }
+        })
     }
 
     private fun displayResults() {
@@ -89,7 +97,7 @@ class ResultActivity : AppCompatActivity() {
         lifecycleScope.launch {
             try {
                 withContext(Dispatchers.IO) {
-                    val result = ResultEntity(
+                    val result = Result(
                         quizId = quizId,
                         score = score,
                         total = total,
@@ -108,11 +116,7 @@ class ResultActivity : AppCompatActivity() {
     private fun setupButtons() {
         // Home button - return to main activity
         binding.homeButton.setOnClickListener {
-            val intent = Intent(this, MainActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
-            intent.putExtra("USERNAME", username)
-            startActivity(intent)
-            finish()
+            navigateToHome()
         }
 
         // Retake button - restart the same quiz
@@ -127,8 +131,7 @@ class ResultActivity : AppCompatActivity() {
         }
     }
 
-    override fun onBackPressed() {
-        // Override back button to go to home instead of quiz
+    private fun navigateToHome() {
         val intent = Intent(this, MainActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
         intent.putExtra("USERNAME", username)

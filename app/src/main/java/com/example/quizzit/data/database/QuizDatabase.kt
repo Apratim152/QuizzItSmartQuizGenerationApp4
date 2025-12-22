@@ -9,10 +9,10 @@ import com.example.quizzit.data.dao.QuizDao
 import com.example.quizzit.data.dao.ResultDao
 import com.example.quizzit.data.entity.QuestionEntity
 import com.example.quizzit.data.entity.QuizEntity
-import com.example.quizzit.data.entity.ResultEntity
+import com.example.quizzit.data.entity.Result
 
 @Database(
-    entities = [QuizEntity::class, QuestionEntity::class, ResultEntity::class],
+    entities = [QuizEntity::class, QuestionEntity::class, Result::class],
     version = 1,
     exportSchema = false
 )

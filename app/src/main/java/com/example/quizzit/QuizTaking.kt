@@ -2,7 +2,6 @@ package com.example.quizzit
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.quizzit.data.database.QuizDatabase
@@ -106,7 +105,7 @@ class QuizTakingActivity : AppCompatActivity() {
     }
 
     private fun goToResult() {
-        val intent = Intent(this, ResultActivity::class.java).apply {
+        val intent = Intent(this, Result::class.java).apply {
             putExtra("score", score)
             putExtra("totalQuestions", questionList.size)
             putExtra("USERNAME", username)
