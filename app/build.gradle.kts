@@ -9,17 +9,17 @@ plugins {
 
 android {
     namespace = "com.example.quizzit"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.quizzit"
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        // ✅ Read API Key from local.properties (Following Official Tutorial)
+        // ✅ Read API Key from local.properties
         val localProperties = Properties()
         val localPropertiesFile = rootProject.file("local.properties")
         if (localPropertiesFile.exists()) {
@@ -55,46 +55,49 @@ android {
 
     buildFeatures {
         viewBinding = true
-        buildConfig = true  // ✅ Enable BuildConfig
+        buildConfig = true
     }
 }
 
 dependencies {
-    // ---------- Core Android ----------
+    // ---------- Core Android (Using libs.versions.toml) ----------
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
 
-    // ✅ Google AI SDK (Following Official Tutorial - Version 0.9.1)
-    implementation("com.google.ai.client.generativeai:generativeai:1.0.0")
+    // ✅ Google AI SDK (Gemini)
+    implementation("com.google.ai.client.generativeai:generativeai:0.9.0")
+
+    // ✅ Jsoup for URL content extraction
+    implementation("org.jsoup:jsoup:1.17.2")
+
+    // ---------- Room Database ----------
+    val roomVersion = "2.6.1"
+    implementation("androidx.room:room-runtime:$roomVersion")
+    implementation("androidx.room:room-ktx:$roomVersion")
+    kapt("androidx.room:room-compiler:$roomVersion")
+
+    // ---------- Lifecycle ----------
+    val lifecycleVersion = "2.8.7"
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleVersion")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:$lifecycleVersion")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:$lifecycleVersion")
+
+    // ---------- Coroutines ----------
+    val coroutinesVersion = "1.9.0"
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion")
+
+    // ---------- RecyclerView ----------
+    implementation("androidx.recyclerview:recyclerview:1.3.2")
+
+    // ---------- CardView ----------
+    implementation("androidx.cardview:cardview:1.0.0")
 
     // ---------- Testing ----------
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-
-    // ---------- Room Database ----------
-    implementation("androidx.room:room-runtime:2.6.1")
-    kapt("androidx.room:room-compiler:2.6.1")
-    implementation("androidx.room:room-ktx:2.6.1")
-
-    // ---------- Lifecycle ----------
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2")
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.2")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
-
-    // ---------- Coroutines ----------
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
-
-    // ---------- RecyclerView ----------
-    implementation("androidx.recyclerview:recyclerview:1.3.1")
-
-    // ---------- CardView ----------
-    implementation("androidx.cardview:cardview:1.0.0")
-
-    // ---------- Logging (Optional) ----------
-    implementation("com.jakewharton.timber:timber:5.0.1")
 }
