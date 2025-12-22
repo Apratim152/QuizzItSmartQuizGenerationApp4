@@ -22,6 +22,10 @@
         <activity
             android:name=".QuizTakingActivity"
             android:exported="false" />
+        <!-- ADD THIS: QuizGenerationActivity -->
+        <activity
+            android:name=".QuizGenerationActivity"
+            android:exported="false" />
         <activity
             android:name=".CreateQuizActivity"
             android:exported="false" />

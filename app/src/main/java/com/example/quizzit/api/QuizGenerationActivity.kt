@@ -11,7 +11,9 @@ import com.example.quizzit.data.entity.QuestionEntity
 import com.example.quizzit.data.entity.QuizEntity
 import com.example.quizzit.databinding.ActivityQuizGenerationBinding
 import com.google.ai.client.generativeai.GenerativeModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.json.JSONArray
 
 class QuizGenerationActivity : AppCompatActivity() {
@@ -19,6 +21,14 @@ class QuizGenerationActivity : AppCompatActivity() {
     private lateinit var binding: ActivityQuizGenerationBinding
     private lateinit var db: QuizDatabase
     private var username: String = "User"
+
+    // ✅ Step 3: Initialize GenerativeModel (Following Official Tutorial)
+    private val generativeModel by lazy {
+        GenerativeModel(
+            modelName = "gemini-1.5-flash", // Using flash model for speed
+            apiKey = BuildConfig.GEMINI_API_KEY
+        )
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,6 +38,7 @@ class QuizGenerationActivity : AppCompatActivity() {
         db = QuizDatabase.getDatabase(this)
         username = intent.getStringExtra("USERNAME") ?: "User"
 
+        Log.d("QuizGeneration", "Activity created, username: $username")
         setupUI()
     }
 
@@ -36,6 +47,8 @@ class QuizGenerationActivity : AppCompatActivity() {
             val topic = binding.etTopic.text.toString().trim()
             val difficulty = binding.spinnerDifficulty.selectedItem.toString()
             val questionCount = binding.etQuestionCount.text.toString().toIntOrNull() ?: 5
+
+            Log.d("QuizGeneration", "Generate button clicked - Topic: $topic, Difficulty: $difficulty, Count: $questionCount")
 
             if (topic.isEmpty()) {
                 Toast.makeText(this, "Please enter a topic", Toast.LENGTH_SHORT).show()
@@ -56,38 +69,44 @@ class QuizGenerationActivity : AppCompatActivity() {
         binding.progressBar.visibility = android.view.View.VISIBLE
         Toast.makeText(this, "Generating quiz...", Toast.LENGTH_SHORT).show()
 
+        // ✅ Step 4: Use lifecycleScope.launch (Following Official Tutorial)
         lifecycleScope.launch {
             try {
+                Log.d("QuizGeneration", "Starting quiz generation...")
+
                 // 1. Create prompt
                 val prompt = createPrompt(topic, difficulty, count)
                 Log.d("QuizPrompt", prompt)
 
-                // 2. Call Gemini API
-                val generativeModel = GenerativeModel(
-                    modelName = "gemini-2.0-flash-exp",
-                    apiKey = BuildConfig.GEMINI_API_KEY
-                )
-
+                // ✅ Step 4: Call generateContent (suspend function)
+                Log.d("QuizGeneration", "Calling Gemini API...")
                 val response = generativeModel.generateContent(prompt)
-                val responseText = response.text ?: ""
-                Log.d("QuizResponse", responseText)
 
-                // 3. Parse JSON response
+                // ✅ Step 4: Handle the result using response.text
+                val responseText = response.text ?: ""
+                Log.d("QuizResponse", "Response received: $responseText")
+
+                // 2. Parse JSON response
                 val questions = parseQuestions(responseText)
+                Log.d("QuizGeneration", "Parsed ${questions.size} questions")
 
                 if (questions.isEmpty()) {
                     throw Exception("Failed to generate questions")
                 }
 
-                // 4. Save to database
-                val quizId = saveQuizToDatabase(topic, difficulty, questions)
+                // 3. Save to database
+                val quizId = withContext(Dispatchers.IO) {
+                    saveQuizToDatabase(topic, difficulty, questions)
+                }
+                Log.d("QuizGeneration", "Quiz saved with ID: $quizId")
 
-                // 5. Navigate to quiz
+                // 4. Navigate to quiz
                 Toast.makeText(this@QuizGenerationActivity, "Quiz generated!", Toast.LENGTH_SHORT).show()
                 goToQuiz(quizId, questions.size)
 
             } catch (e: Exception) {
                 Log.e("QuizGeneration", "Error: ${e.message}", e)
+                e.printStackTrace()
                 Toast.makeText(
                     this@QuizGenerationActivity,
                     "Error: ${e.message}",
@@ -131,6 +150,8 @@ class QuizGenerationActivity : AppCompatActivity() {
 
         try {
             val cleanedJson = extractValidJson(responseText)
+            Log.d("QuizParsing", "Cleaned JSON: $cleanedJson")
+
             val jsonArray = JSONArray(cleanedJson)
 
             for (i in 0 until jsonArray.length()) {
@@ -164,12 +185,14 @@ class QuizGenerationActivity : AppCompatActivity() {
                 )
 
                 questions.add(question)
+                Log.d("QuizParsing", "Added question ${i + 1}: $questionText")
             }
 
             Log.d("QuizParsing", "Successfully parsed ${questions.size} questions")
 
         } catch (e: Exception) {
             Log.e("QuizParsing", "Error parsing JSON: ${e.message}", e)
+            e.printStackTrace()
             throw Exception("Failed to parse quiz questions: ${e.message}")
         }
 
@@ -196,7 +219,9 @@ class QuizGenerationActivity : AppCompatActivity() {
         questions: List<QuestionEntity>
     ): Int {
         return try {
-            // Create quiz entity - removed createdBy parameter
+            Log.d("QuizDatabase", "Saving quiz to database...")
+
+            // Create quiz entity
             val quiz = QuizEntity(
                 title = topic,
                 subject = topic,
@@ -209,27 +234,41 @@ class QuizGenerationActivity : AppCompatActivity() {
 
             // Insert quiz and get its ID
             val quizId = db.quizDao().insertQuiz(quiz).toInt()
+            Log.d("QuizDatabase", "Quiz inserted with ID: $quizId")
 
             // Update questions with quiz ID and insert
             val questionsWithQuizId = questions.map { it.copy(quizOwnerId = quizId) }
             db.questionDao().insertQuestions(questionsWithQuizId)
+            Log.d("QuizDatabase", "Inserted ${questionsWithQuizId.size} questions")
 
-            Log.d("QuizDatabase", "Saved quiz with ID: $quizId")
             quizId
 
         } catch (e: Exception) {
             Log.e("QuizDatabase", "Error saving to database: ${e.message}", e)
+            e.printStackTrace()
             throw Exception("Failed to save quiz: ${e.message}")
         }
     }
 
     private fun goToQuiz(quizId: Int, totalQuestions: Int) {
-        val intent = Intent(this, QuizTakingActivity::class.java).apply {
-            putExtra("quizId", quizId)
-            putExtra("USERNAME", username)
-            putExtra("totalQuestions", totalQuestions)
+        try {
+            Log.d("QuizGeneration", "Navigating to QuizTakingActivity with quizId: $quizId")
+
+            val intent = Intent(this, QuizTakingActivity::class.java).apply {
+                putExtra("quizId", quizId)
+                putExtra("USERNAME", username)
+                putExtra("totalQuestions", totalQuestions)
+            }
+
+            startActivity(intent)
+            finish()
+
+        } catch (e: Exception) {
+            Log.e("QuizGeneration", "Error starting QuizTakingActivity: ${e.message}", e)
+            e.printStackTrace()
+            Toast.makeText(this, "Error opening quiz: ${e.message}", Toast.LENGTH_LONG).show()
+            binding.btnGenerateQuiz.isEnabled = true
+            binding.progressBar.visibility = android.view.View.GONE
         }
-        startActivity(intent)
-        finish()
     }
 }

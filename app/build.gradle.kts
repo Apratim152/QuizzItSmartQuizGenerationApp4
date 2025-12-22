@@ -9,22 +9,24 @@ plugins {
 
 android {
     namespace = "com.example.quizzit"
-    compileSdk = 36
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.example.quizzit"
         minSdk = 24
-        targetSdk = 36
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        // ✅ Read Gemini API Key from local.properties
+        // ✅ Read API Key from local.properties (Following Official Tutorial)
         val localProperties = Properties()
         val localPropertiesFile = rootProject.file("local.properties")
         if (localPropertiesFile.exists()) {
             localProperties.load(FileInputStream(localPropertiesFile))
         }
+
+        // Add to BuildConfig
         buildConfigField(
             "String",
             "GEMINI_API_KEY",
@@ -53,7 +55,7 @@ android {
 
     buildFeatures {
         viewBinding = true
-        buildConfig = true
+        buildConfig = true  // ✅ Enable BuildConfig
     }
 }
 
@@ -65,8 +67,8 @@ dependencies {
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
 
-    // ---------- Google AI (Gemini) - NO Retrofit/OkHttp needed! ----------
-    implementation("com.google.ai.client.generativeai:generativeai:0.9.0")
+    // ✅ Google AI SDK (Following Official Tutorial - Version 0.9.1)
+    implementation("com.google.ai.client.generativeai:generativeai:1.0.0")
 
     // ---------- Testing ----------
     testImplementation(libs.junit)
@@ -95,10 +97,4 @@ dependencies {
 
     // ---------- Logging (Optional) ----------
     implementation("com.jakewharton.timber:timber:5.0.1")
-
-    // ❌ REMOVED - Not needed for Gemini API:
-    // - Retrofit
-    // - OkHttp
-    // - Gson Converter
-    // The Google AI SDK handles all networking internally!
 }
