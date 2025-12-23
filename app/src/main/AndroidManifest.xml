@@ -17,21 +17,20 @@
 
         <!-- App Activities -->
         <activity
-            android:name=".Result"
+            android:name=".ResultActivity"
             android:exported="false" />
         <activity
             android:name=".QuizTakingActivity"
             android:exported="false" />
-        <!-- ADD THIS: QuizGenerationActivity -->
         <activity
             android:name=".QuizGenerationActivity"
             android:exported="false" />
-
-        <activity
-            android:name=".LoginCredentials"
-            android:exported="false" />
         <activity
             android:name=".MainActivity"
+            android:exported="false" />
+        <!-- LoginCredentials is now the launcher activity -->
+        <activity
+            android:name=".LoginCredentials"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -2,6 +2,7 @@ package com.example.quizzit
 
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import com.example.quizzit.databinding.ActivityMainBinding
 
@@ -24,18 +25,20 @@ class MainActivity : AppCompatActivity() {
             intent.putExtra("USERNAME", username)
             startActivity(intent)
         }
-    }
 
-    override fun onBackPressed() {
-        // Show confirmation dialog before exiting
-        androidx.appcompat.app.AlertDialog.Builder(this)
-            .setTitle("Exit QuizzIt")
-            .setMessage("Are you sure you want to exit?")
-            .setPositiveButton("Yes") { _, _ ->
-                super.onBackPressed()
-                finishAffinity() // Close all activities
+        // Handle back button with OnBackPressedDispatcher
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                // Show confirmation dialog before exiting
+                androidx.appcompat.app.AlertDialog.Builder(this@MainActivity)
+                    .setTitle("Exit QuizzIt")
+                    .setMessage("Are you sure you want to exit?")
+                    .setPositiveButton("Yes") { _, _ ->
+                        finishAffinity() // Close all activities
+                    }
+                    .setNegativeButton("No", null)
+                    .show()
             }
-            .setNegativeButton("No", null)
-            .show()
+        })
     }
 }

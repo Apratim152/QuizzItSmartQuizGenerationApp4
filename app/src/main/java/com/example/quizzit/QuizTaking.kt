@@ -105,7 +105,7 @@ class QuizTakingActivity : AppCompatActivity() {
     }
 
     private fun goToResult() {
-        val intent = Intent(this, Result::class.java).apply {
+        val intent = Intent(this, ResultActivity::class.java).apply {  // Changed from Result::class.java
             putExtra("score", score)
             putExtra("totalQuestions", questionList.size)
             putExtra("USERNAME", username)
