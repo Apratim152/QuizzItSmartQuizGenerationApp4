@@ -19,9 +19,19 @@ class MainActivity : AppCompatActivity() {
         // Get username from intent if passed from login
         username = intent.getStringExtra("USERNAME") ?: "User"
 
+        // Display welcome message
+        binding.welcomeTextView.text = "Welcome, $username!"
+
         // Navigate to QuizGenerationActivity to create AI-powered quiz
         binding.btnCreateQuiz.setOnClickListener {
             val intent = Intent(this, QuizGenerationActivity::class.java)
+            intent.putExtra("USERNAME", username)
+            startActivity(intent)
+        }
+
+        // Navigate to Leaderboard
+        binding.btnLeaderboard.setOnClickListener {
+            val intent = Intent(this, LeaderboardActivity::class.java)
             intent.putExtra("USERNAME", username)
             startActivity(intent)
         }

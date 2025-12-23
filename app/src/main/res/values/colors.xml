@@ -1,17 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- Primary brand color -->
+    <!-- ===== Material default colors (optional but safe to keep) ===== -->
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <!-- ===== Brand / Primary colors ===== -->
     <color name="primary">#6C63FF</color>
+    <!-- Keeping this for backward compatibility if already used -->
+    <color name="primary_color">#FF6200EE</color>
 
-    <!-- Background -->
+    <!-- ===== Background colors ===== -->
     <color name="bg_light">#F6F7FB</color>
+    <color name="background_color">#F5F5F5</color>
 
-    <!-- Text colors -->
+    <!-- ===== Text colors ===== -->
     <color name="text_primary">#1F2937</color>
     <color name="text_secondary">#6B7280</color>
 
-    <!-- Basics -->
-    <color name="white">#FFFFFF</color>
+    <!-- ===== Special UI states ===== -->
+    <color name="highlight_current_user">#E3F2FD</color>
 
 </resources>

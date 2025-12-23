@@ -7,13 +7,15 @@ import androidx.room.RoomDatabase
 import com.example.quizzit.data.dao.QuestionDao
 import com.example.quizzit.data.dao.QuizDao
 import com.example.quizzit.data.dao.ResultDao
+import com.example.quizzit.data.dao.UserDao
 import com.example.quizzit.data.entity.QuestionEntity
 import com.example.quizzit.data.entity.QuizEntity
 import com.example.quizzit.data.entity.Result
+import com.example.quizzit.data.entity.UserEntity
 
 @Database(
-    entities = [QuizEntity::class, QuestionEntity::class, Result::class],
-    version = 1,
+    entities = [QuizEntity::class, QuestionEntity::class, Result::class, UserEntity::class],
+    version = 2,
     exportSchema = false
 )
 abstract class QuizDatabase : RoomDatabase() {
@@ -21,6 +23,7 @@ abstract class QuizDatabase : RoomDatabase() {
     abstract fun quizDao(): QuizDao
     abstract fun questionDao(): QuestionDao
     abstract fun resultDao(): ResultDao
+    abstract fun userDao(): UserDao
 
     companion object {
         @Volatile
@@ -32,7 +35,9 @@ abstract class QuizDatabase : RoomDatabase() {
                     context.applicationContext,
                     QuizDatabase::class.java,
                     "quiz_database"
-                ).build()
+                )
+                    .fallbackToDestructiveMigration()
+                    .build()
                 INSTANCE = instance
                 instance
             }

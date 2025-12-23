@@ -17,6 +17,10 @@
 
         <!-- App Activities -->
         <activity
+            android:name=".LeaderboardActivity"
+            android:exported="false"
+            android:label="Leaderboard" />
+        <activity
             android:name=".ResultActivity"
             android:exported="false" />
         <activity
@@ -28,7 +32,7 @@
         <activity
             android:name=".MainActivity"
             android:exported="false" />
-        <!-- LoginCredentials is now the launcher activity -->
+        <!-- LoginCredentials is the launcher activity -->
         <activity
             android:name=".LoginCredentials"
             android:exported="true">
