@@ -12,7 +12,7 @@
         android:orientation="vertical"
         android:padding="20dp">
 
-        <!-- Header Section -->
+        <!-- ================= HEADER SECTION ================= -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -21,13 +21,14 @@
             android:layout_marginTop="32dp"
             android:layout_marginBottom="24dp">
 
-            <!-- Logo/Icon Placeholder -->
+            <!-- Logo Placeholder -->
             <View
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:background="@drawable/circle_gradient"
                 android:layout_marginBottom="16dp"/>
 
+            <!-- App Name -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -38,6 +39,7 @@
                 android:letterSpacing="0.02"
                 android:layout_marginBottom="4dp"/>
 
+            <!-- Tagline -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -47,7 +49,7 @@
                 android:alpha="0.8"
                 android:layout_marginBottom="12dp"/>
 
-            <!-- Welcome Message - NEW -->
+            <!-- Welcome Message -->
             <TextView
                 android:id="@+id/welcomeTextView"
                 android:layout_width="wrap_content"
@@ -57,9 +59,47 @@
                 android:textStyle="bold"
                 android:textColor="#2E2D32"
                 android:layout_marginTop="8dp"/>
+
+            <!-- Inspirational Quote Card -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="6dp"
+                app:cardBackgroundColor="#F3F2FF">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp"
+                    android:gravity="center">
+
+                    <TextView
+                        android:id="@+id/quoteTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="“Learning never exhausts the mind.”"
+                        android:textSize="16sp"
+                        android:textStyle="italic"
+                        android:textColor="#4B42FF"
+                        android:gravity="center"
+                        android:layout_marginBottom="6dp"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="— Leonardo da Vinci"
+                        android:textSize="12sp"
+                        android:textColor="#6C63FF"
+                        android:alpha="0.8"/>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
         </LinearLayout>
 
-        <!-- Create Quiz Card -->
+        <!-- ================= CREATE QUIZ CARD ================= -->
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -108,7 +148,7 @@
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
-        <!-- Leaderboard Card - NEW -->
+        <!-- ================= LEADERBOARD CARD ================= -->
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
