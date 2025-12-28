@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.quizzit">
 
-    <!-- Required permission for network calls -->
+    <!-- Internet permission -->
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
@@ -15,32 +15,43 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.QuizzItSmartQuizGenerationApp2">
 
-        <!-- App Activities -->
+        <!-- Splash Screen Activity (LAUNCHER) -->
         <activity
-            android:name=".LeaderboardActivity"
-            android:exported="false"
-            android:label="Leaderboard" />
-        <activity
-            android:name=".ResultActivity"
-            android:exported="false" />
-        <activity
-            android:name=".QuizTakingActivity"
-            android:exported="false" />
-        <activity
-            android:name=".QuizGenerationActivity"
-            android:exported="false" />
-        <activity
-            android:name=".MainActivity"
-            android:exported="false" />
-        <!-- LoginCredentials is the launcher activity -->
-        <activity
-            android:name=".LoginCredentials"
+            android:name=".SplashActivity"
+            android:theme="@style/Theme.Splash"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Login Screen -->
+        <activity
+            android:name=".LoginCredentials"
+            android:exported="false" />
+
+        <!-- Main App Screens -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".QuizGenerationActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".QuizTakingActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ResultActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".LeaderboardActivity"
+            android:exported="false"
+            android:label="Leaderboard" />
 
     </application>
 

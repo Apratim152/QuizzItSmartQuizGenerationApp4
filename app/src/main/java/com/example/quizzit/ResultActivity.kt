@@ -3,6 +3,7 @@ package com.example.quizzit
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -40,13 +41,13 @@ class ResultActivity : AppCompatActivity() {
         // Calculate XP based on score
         xpEarned = score * 10
 
-        Log.d("ResultActivity", "Quiz Results - Score: $score/$total, XP: $xpEarned")
+        Log.d("ResultActivity", "Quiz Results - Score: $score/$total, XP: $xpEarned, Username: $username")
 
         // Display results
         displayResults()
 
-        // Save result to database
-        saveResultToDatabase()
+        // Save result to database AND update user stats
+        saveResultAndUpdateStats()
 
         // Setup buttons
         setupButtons()
@@ -72,9 +73,6 @@ class ResultActivity : AppCompatActivity() {
         // Set percentage
         binding.percentageTextView.text = "$percentage%"
 
-        // Set XP earned (if you have this view)
-        // binding.xpTextView?.text = "XP Earned: $xpEarned"
-
         // Set result message with emoji based on performance
         binding.resultMessageTextView.text = when {
             percentage >= 90 -> "🎉 Excellent! Outstanding performance!"
@@ -84,7 +82,7 @@ class ResultActivity : AppCompatActivity() {
             else -> "💪 Keep Practicing! You can do better!"
         }
 
-        // Set text color based on performance (optional)
+        // Set text color based on performance
         val colorRes = when {
             percentage >= 75 -> android.R.color.holo_green_dark
             percentage >= 50 -> android.R.color.holo_orange_dark
@@ -93,10 +91,11 @@ class ResultActivity : AppCompatActivity() {
         binding.percentageTextView.setTextColor(getColor(colorRes))
     }
 
-    private fun saveResultToDatabase() {
+    private fun saveResultAndUpdateStats() {
         lifecycleScope.launch {
             try {
                 withContext(Dispatchers.IO) {
+                    // 1. Save result to results table
                     val result = Result(
                         quizId = quizId,
                         score = score,
@@ -106,9 +105,62 @@ class ResultActivity : AppCompatActivity() {
                     )
                     db.resultDao().insertResult(result)
                     Log.d("ResultActivity", "Result saved to database")
+
+                    // 2. Update user stats
+                    val user = db.userDao().getUserByUsername(username)
+                    if (user == null) {
+                        Log.e("ResultActivity", "ERROR: User '$username' not found!")
+                        return@withContext
+                    }
+
+                    Log.d("ResultActivity", "User before update: $user")
+
+                    // Update XP, quizzes completed, and total score
+                    db.userDao().updateUserStats(username, xpEarned, score)
+
+                    // Get updated user and calculate average/highest
+                    val updatedUser = db.userDao().getUserByUsername(username)
+                    if (updatedUser != null) {
+                        val newAverageScore = if (updatedUser.quizzesCompleted > 0) {
+                            updatedUser.totalScore.toFloat() / updatedUser.quizzesCompleted
+                        } else {
+                            0f
+                        }
+                        val newHighestScore = maxOf(updatedUser.highestScore, score)
+
+                        // Update the user entity with calculated values
+                        val finalUser = updatedUser.copy(
+                            averageScore = newAverageScore,
+                            highestScore = newHighestScore
+                        )
+                        db.userDao().updateUser(finalUser)
+
+                        Log.d("ResultActivity", "User after update: $finalUser")
+                    }
+
+                    Log.d("ResultActivity", "✅ Stats updated successfully!")
                 }
+
+                // Show success message
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(
+                        this@ResultActivity,
+                        "🎉 +$xpEarned XP earned!",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+
             } catch (e: Exception) {
-                Log.e("ResultActivity", "Error saving result: ${e.message}", e)
+                Log.e("ResultActivity", "❌ Error saving result: ${e.message}", e)
+                e.printStackTrace()
+
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(
+                        this@ResultActivity,
+                        "Error updating stats",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             }
         }
     }

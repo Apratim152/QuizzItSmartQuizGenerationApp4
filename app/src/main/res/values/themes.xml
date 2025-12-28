@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- Main App Theme -->
     <style name="Theme.QuizzItSmartQuizGenerationApp2"
         parent="Theme.Material3.DayNight.NoActionBar">
 
@@ -8,11 +9,22 @@
         <item name="colorPrimaryVariant">@color/primary</item>
         <item name="colorSecondary">@color/text_secondary</item>
 
-        <!-- Optional but recommended -->
+        <!-- System UI -->
         <item name="android:statusBarColor">@color/primary</item>
         <item name="android:navigationBarColor">@color/white</item>
 
     </style>
 
-</resources>
+    <!-- Splash Screen Theme -->
+    <style name="Theme.Splash"
+        parent="Theme.MaterialComponents.DayNight.NoActionBar">
 
+        <item name="android:windowBackground">@drawable/splash_gradient</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+
+    </style>
+
+</resources>

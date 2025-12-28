@@ -31,7 +31,7 @@
             app:cardElevation="12dp"
             app:strokeWidth="1dp"
             app:strokeColor="#E0E0E0"
-            android:layout_marginBottom="32dp">
+            android:layout_marginBottom="24dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -88,6 +88,55 @@
                     android:text="Great Job! 🎉"
                     android:textSize="18sp"
                     android:textColor="@color/primary"/>
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Inspirational Quote Card -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="8dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="#E0E0E0"
+            android:layout_marginBottom="24dp"
+            app:cardBackgroundColor="#F3F4F6">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp"
+                android:gravity="center">
+
+                <!-- Quote Icon -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="💡"
+                    android:textSize="32sp"
+                    android:layout_marginBottom="12dp"/>
+
+                <!-- Quote Text -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Success is the sum of small efforts repeated day in and day out."
+                    android:textSize="16sp"
+                    android:textStyle="italic"
+                    android:textColor="#4B5563"
+                    android:gravity="center"
+                    android:layout_marginBottom="8dp"/>
+
+                <!-- Quote Author -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="— Robert Collier"
+                    android:textSize="14sp"
+                    android:textColor="#6B7280"
+                    android:textStyle="bold"/>
 
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
