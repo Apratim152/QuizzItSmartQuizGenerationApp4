@@ -12,6 +12,7 @@ import com.example.quizzit.data.entity.QuizEntity
 import com.example.quizzit.databinding.ActivityQuizGenerationBinding
 import com.google.ai.client.generativeai.GenerativeModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
@@ -30,6 +31,10 @@ class QuizGenerationActivity : AppCompatActivity() {
             apiKey = BuildConfig.GEMINI_API_KEY
         )
     }
+
+    // Batch generation settings
+    private val BATCH_SIZE = 10 // Generate 10 questions per API call
+    private val DELAY_BETWEEN_BATCHES = 500L // 500ms delay to avoid rate limiting
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,8 +66,9 @@ class QuizGenerationActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            if (questionCount < 1 || questionCount > 20) {
-                Toast.makeText(this, "Question count should be between 1-20", Toast.LENGTH_SHORT).show()
+            // ✅ Updated: Allow up to 100 questions instead of 20
+            if (questionCount < 1 || questionCount > 100) {
+                Toast.makeText(this, "Question count should be between 1-100", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
@@ -95,45 +101,89 @@ class QuizGenerationActivity : AppCompatActivity() {
                 Log.d("QuizGeneration", "Extracted ${pageContent.length} characters from URL")
                 Toast.makeText(this@QuizGenerationActivity, "Content extracted! Generating quiz...", Toast.LENGTH_SHORT).show()
 
-                // Step 2: Create prompt with extracted content
-                val prompt = createPromptWithContent(pageContent, difficulty, count)
-                Log.d("QuizPrompt", "Prompt created with content length: ${prompt.length}")
+                // ✅ Step 2: Generate questions in batches
+                val allQuestions = mutableListOf<QuestionEntity>()
+                val totalBatches = (count + BATCH_SIZE - 1) / BATCH_SIZE
 
-                // Step 3: Call Gemini API
-                Log.d("QuizGeneration", "Calling Gemini API...")
-                val response = generativeModel.generateContent(prompt)
+                Log.d("QuizGeneration", "Starting batch generation: $count questions in $totalBatches batches of $BATCH_SIZE")
 
-                val responseText = response.text ?: ""
-                Log.d("QuizResponse", "Response received: ${responseText.take(200)}...")
+                for (batchNum in 0 until totalBatches) {
+                    val questionsInThisBatch = minOf(
+                        BATCH_SIZE,
+                        count - (batchNum * BATCH_SIZE)
+                    )
 
-                // Step 4: Parse JSON response
-                val questions = parseQuestions(responseText)
-                Log.d("QuizGeneration", "Parsed ${questions.size} questions")
+                    try {
+                        // Update progress
+                        val progress = ((batchNum * BATCH_SIZE) + questionsInThisBatch) * 100 / count
+                        withContext(Dispatchers.Main) {
+                            binding.tvQuestionCountInfo.text = "Generating batch ${batchNum + 1}/$totalBatches ($progress%)"
+                        }
 
-                if (questions.isEmpty()) {
-                    throw Exception("Failed to generate questions")
+                        Log.d("QuizGeneration", "Generating batch ${batchNum + 1}/$totalBatches with $questionsInThisBatch questions")
+
+                        // Create prompt for this batch
+                        val prompt = createPromptWithContent(pageContent, difficulty, questionsInThisBatch)
+
+                        // Call Gemini API for this batch
+                        val response = generativeModel.generateContent(prompt)
+                        val responseText = response.text ?: ""
+
+                        // Parse questions from this batch
+                        val batchQuestions = parseQuestions(responseText)
+                        allQuestions.addAll(batchQuestions)
+
+                        Log.d("QuizGeneration", "Batch ${batchNum + 1} completed: ${batchQuestions.size} questions")
+
+                        // Add delay between requests to avoid rate limiting
+                        if (batchNum < totalBatches - 1) {
+                            delay(DELAY_BETWEEN_BATCHES)
+                        }
+
+                    } catch (e: Exception) {
+                        Log.e("QuizGeneration", "Error generating batch ${batchNum + 1}: ${e.message}", e)
+                        // Continue with next batch instead of failing completely
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(
+                                this@QuizGenerationActivity,
+                                "Warning: Batch ${batchNum + 1} failed, continuing with remaining batches...",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
                 }
 
-                // Step 5: Save to database
+                if (allQuestions.isEmpty()) {
+                    throw Exception("Failed to generate any questions")
+                }
+
+                Log.d("QuizGeneration", "Successfully generated ${allQuestions.size} total questions")
+
+                // Step 3: Save to database
                 val quizId = withContext(Dispatchers.IO) {
-                    saveQuizToDatabase(url, difficulty, questions)
+                    saveQuizToDatabase(url, difficulty, allQuestions)
                 }
                 Log.d("QuizGeneration", "Quiz saved with ID: $quizId")
 
-                // Step 6: Navigate to quiz
-                Toast.makeText(this@QuizGenerationActivity, "Quiz generated!", Toast.LENGTH_SHORT).show()
-                goToQuiz(quizId, questions.size)
+                // Step 4: Navigate to quiz
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(this@QuizGenerationActivity, "Quiz generated! $${allQuestions.size} questions ready.", Toast.LENGTH_SHORT).show()
+                    goToQuiz(quizId, allQuestions.size)
+                }
 
             } catch (e: Exception) {
                 Log.e("QuizGeneration", "Error: ${e.message}", e)
                 e.printStackTrace()
-                Toast.makeText(
-                    this@QuizGenerationActivity,
-                    "Error: ${e.message}",
-                    Toast.LENGTH_LONG
-                ).show()
-                binding.btnGenerateQuiz.isEnabled = true
-                binding.progressBar.visibility = android.view.View.GONE
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(
+                        this@QuizGenerationActivity,
+                        "Error: ${e.message}",
+                        Toast.LENGTH_LONG
+                    ).show()
+                    binding.btnGenerateQuiz.isEnabled = true
+                    binding.progressBar.visibility = android.view.View.GONE
+                    binding.tvQuestionCountInfo.text = ""
+                }
             }
         }
     }
