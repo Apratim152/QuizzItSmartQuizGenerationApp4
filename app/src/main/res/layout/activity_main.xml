@@ -80,7 +80,7 @@
                         android:id="@+id/quoteTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="“Learning never exhausts the mind.”"
+                        android:text="Learning never exhausts the mind."
                         android:textSize="16sp"
                         android:textStyle="italic"
                         android:textColor="#4B42FF"
@@ -143,6 +143,55 @@
                     app:backgroundTint="#6C63FF"
                     app:cornerRadius="16dp"
                     app:icon="@android:drawable/ic_input_add"
+                    app:iconGravity="textStart"
+                    app:iconTint="@android:color/white"/>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- ================= QUIZ HISTORY CARD (NEW) ================= -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="8dp"
+            android:layout_marginBottom="16dp"
+            app:cardBackgroundColor="@android:color/white">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="24dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="📚 Quiz History"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:textColor="#2E2D32"
+                    android:layout_marginBottom="8dp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="View and retake all your saved quizzes"
+                    android:textSize="14sp"
+                    android:textColor="#666666"
+                    android:layout_marginBottom="20dp"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnViewHistory"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:text="View History"
+                    android:textColor="@android:color/white"
+                    android:textAllCaps="false"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:backgroundTint="#4CAF50"
+                    app:cornerRadius="16dp"
+                    app:icon="@android:drawable/ic_menu_view"
                     app:iconGravity="textStart"
                     app:iconTint="@android:color/white"/>
             </LinearLayout>

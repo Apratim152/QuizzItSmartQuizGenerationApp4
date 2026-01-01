@@ -1,9 +1,12 @@
 package com.example.quizzit
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
-import android.util.Log
+import android.provider.OpenableColumns
+import android.view.View
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.quizzit.data.database.QuizDatabase
@@ -11,410 +14,325 @@ import com.example.quizzit.data.entity.QuestionEntity
 import com.example.quizzit.data.entity.QuizEntity
 import com.example.quizzit.databinding.ActivityQuizGenerationBinding
 import com.google.ai.client.generativeai.GenerativeModel
+import com.tom_roush.pdfbox.android.PDFBoxResourceLoader
+import com.tom_roush.pdfbox.pdmodel.PDDocument
+import com.tom_roush.pdfbox.text.PDFTextStripper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import org.jsoup.Jsoup
-import java.io.IOException
+import java.io.InputStream
+import kotlin.math.pow
 
 class QuizGenerationActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityQuizGenerationBinding
-    private lateinit var db: QuizDatabase
+    private lateinit var database: QuizDatabase
+
+    private var selectedFileUri: Uri? = null
+    private var selectedFileName: String = ""
     private var username: String = "User"
 
     private val generativeModel by lazy {
         GenerativeModel(
             modelName = "gemini-2.5-flash",
-            apiKey = BuildConfig.GEMINI_API_KEY
+            apiKey = BuildConfig.GEMINI_API_KEY1
         )
     }
 
-    // Batch generation settings
-    private val BATCH_SIZE = 10 // Generate 10 questions per API call
-    private val DELAY_BETWEEN_BATCHES = 500L // 500ms delay to avoid rate limiting
+    private val BATCH_SIZE = 10
+    private val MAX_RETRIES = 3
+    private val BATCH_DELAY = 2000L
+    private val QUOTA_WAIT = 60000L
+
+    // ---------- File Picker ----------
+    private val filePicker =
+        registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+            if (uri != null) {
+                selectedFileUri = uri
+                selectedFileName = getFileNameFromUri(uri)
+                binding.tvSelectedFile.text = "📄 $selectedFileName"
+                binding.tvSelectedFile.visibility = View.VISIBLE
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // ✅ Required for Android PDFBox
+        PDFBoxResourceLoader.init(applicationContext)
+
         binding = ActivityQuizGenerationBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        db = QuizDatabase.getDatabase(this)
+        database = QuizDatabase.getDatabase(this)
         username = intent.getStringExtra("USERNAME") ?: "User"
 
-        Log.d("QuizGeneration", "Activity created, username: $username")
         setupUI()
     }
 
+    // ---------- UI ----------
     private fun setupUI() {
+
+        binding.btnChooseFile.setOnClickListener {
+            filePicker.launch("*/*")
+        }
+
+        binding.btnClearFile.setOnClickListener {
+            selectedFileUri = null
+            selectedFileName = ""
+            binding.tvSelectedFile.visibility = View.GONE
+            toast("File cleared")
+        }
+
         binding.btnGenerateQuiz.setOnClickListener {
+
             val url = binding.etTopic.text.toString().trim()
             val difficulty = binding.spinnerDifficulty.selectedItem.toString()
-            val questionCount = binding.etQuestionCount.text.toString().toIntOrNull() ?: 5
+            val questionCount =
+                binding.etQuestionCount.text.toString().toIntOrNull() ?: 5
 
-            Log.d("QuizGeneration", "Generate button clicked - URL: $url, Difficulty: $difficulty, Count: $questionCount")
-
-            if (url.isEmpty()) {
-                Toast.makeText(this, "Please enter a URL", Toast.LENGTH_SHORT).show()
+            if (url.isEmpty() && selectedFileUri == null) {
+                toast("Enter a URL or select a file")
                 return@setOnClickListener
             }
 
-            if (!isValidUrl(url)) {
-                Toast.makeText(this, "Please enter a valid URL (must start with http:// or https://)", Toast.LENGTH_SHORT).show()
+            if (url.isNotEmpty() && !isValidUrl(url)) {
+                toast("Invalid URL")
                 return@setOnClickListener
             }
 
-            // ✅ Updated: Allow up to 100 questions instead of 20
-            if (questionCount < 1 || questionCount > 100) {
-                Toast.makeText(this, "Question count should be between 1-100", Toast.LENGTH_SHORT).show()
+            if (questionCount !in 1..100) {
+                toast("Questions must be between 1 and 100")
                 return@setOnClickListener
             }
 
-            generateQuizFromUrl(url, difficulty, questionCount)
+            binding.progressBar.visibility = View.VISIBLE
+            binding.btnGenerateQuiz.isEnabled = false
+
+            if (selectedFileUri != null) {
+                generateFromFile(selectedFileUri!!, difficulty, questionCount)
+            } else {
+                generateFromUrl(url, difficulty, questionCount)
+            }
         }
     }
 
-    private fun isValidUrl(url: String): Boolean {
-        return url.startsWith("http://") || url.startsWith("https://")
-    }
-
-    private fun generateQuizFromUrl(url: String, difficulty: String, count: Int) {
-        binding.btnGenerateQuiz.isEnabled = false
-        binding.progressBar.visibility = android.view.View.VISIBLE
-        Toast.makeText(this, "Fetching content from URL...", Toast.LENGTH_SHORT).show()
-
+    // ---------- FILE ----------
+    private fun generateFromFile(uri: Uri, difficulty: String, count: Int) {
         lifecycleScope.launch {
             try {
-                Log.d("QuizGeneration", "Starting URL content extraction...")
+                val content = extractContentFromFile(uri)
+                generateQuestions(content, difficulty, count, selectedFileName)
+            } catch (e: Exception) {
+                showError(e.message)
+            }
+        }
+    }
 
-                // Step 1: Extract content from URL
-                val pageContent = withContext(Dispatchers.IO) {
-                    extractContentFromUrl(url)
-                }
+    private suspend fun extractContentFromFile(uri: Uri): String =
+        withContext(Dispatchers.IO) {
 
-                if (pageContent.isEmpty()) {
-                    throw Exception("Failed to extract content from URL")
-                }
+            val inputStream =
+                contentResolver.openInputStream(uri)
+                    ?: throw Exception("Unable to open file")
 
-                Log.d("QuizGeneration", "Extracted ${pageContent.length} characters from URL")
-                Toast.makeText(this@QuizGenerationActivity, "Content extracted! Generating quiz...", Toast.LENGTH_SHORT).show()
+            val text = when {
+                selectedFileName.endsWith(".pdf", true) ->
+                    extractPdfText(inputStream)
 
-                // ✅ Step 2: Generate questions in batches
-                val allQuestions = mutableListOf<QuestionEntity>()
-                val totalBatches = (count + BATCH_SIZE - 1) / BATCH_SIZE
+                else ->
+                    inputStream.bufferedReader().use { it.readText() }
+            }
 
-                Log.d("QuizGeneration", "Starting batch generation: $count questions in $totalBatches batches of $BATCH_SIZE")
+            if (text.length > 32000) text.substring(0, 32000) else text
+        }
 
-                for (batchNum in 0 until totalBatches) {
-                    val questionsInThisBatch = minOf(
-                        BATCH_SIZE,
-                        count - (batchNum * BATCH_SIZE)
-                    )
+    private fun extractPdfText(inputStream: InputStream): String {
+        val document = PDDocument.load(inputStream)
+        val stripper = PDFTextStripper()
+        val text = stripper.getText(document)
+        document.close()
+        return text
+    }
 
+    // ---------- URL ----------
+    private fun generateFromUrl(url: String, difficulty: String, count: Int) {
+        lifecycleScope.launch {
+            try {
+                val content = extractContentFromUrl(url)
+                generateQuestions(content, difficulty, count, url)
+            } catch (e: Exception) {
+                showError(e.message)
+            }
+        }
+    }
+
+    private suspend fun extractContentFromUrl(url: String): String =
+        withContext(Dispatchers.IO) {
+            val doc = Jsoup.connect(url)
+                .userAgent("Mozilla/5.0")
+                .timeout(15000)
+                .get()
+
+            val text = doc.select("article, main, p").text()
+            if (text.length > 32000) text.substring(0, 32000) else text
+        }
+
+    // ---------- GEMINI ----------
+    private suspend fun generateQuestions(
+        content: String,
+        difficulty: String,
+        count: Int,
+        source: String
+    ) {
+        try {
+            val questions = mutableListOf<QuestionEntity>()
+            val batches = (count + BATCH_SIZE - 1) / BATCH_SIZE
+
+            repeat(batches) {
+
+                var attempt = 0
+                var success = false
+
+                while (!success && attempt < MAX_RETRIES) {
                     try {
-                        // Update progress
-                        val progress = ((batchNum * BATCH_SIZE) + questionsInThisBatch) * 100 / count
-                        withContext(Dispatchers.Main) {
-                            binding.tvQuestionCountInfo.text = "Generating batch ${batchNum + 1}/$totalBatches ($progress%)"
-                        }
+                        val prompt = buildPrompt(
+                            content,
+                            difficulty,
+                            minOf(BATCH_SIZE, count - questions.size)
+                        )
 
-                        Log.d("QuizGeneration", "Generating batch ${batchNum + 1}/$totalBatches with $questionsInThisBatch questions")
-
-                        // Create prompt for this batch
-                        val prompt = createPromptWithContent(pageContent, difficulty, questionsInThisBatch)
-
-                        // Call Gemini API for this batch
                         val response = generativeModel.generateContent(prompt)
-                        val responseText = response.text ?: ""
-
-                        // Parse questions from this batch
-                        val batchQuestions = parseQuestions(responseText)
-                        allQuestions.addAll(batchQuestions)
-
-                        Log.d("QuizGeneration", "Batch ${batchNum + 1} completed: ${batchQuestions.size} questions")
-
-                        // Add delay between requests to avoid rate limiting
-                        if (batchNum < totalBatches - 1) {
-                            delay(DELAY_BETWEEN_BATCHES)
-                        }
+                        questions.addAll(parseQuestions(response.text ?: ""))
+                        success = true
 
                     } catch (e: Exception) {
-                        Log.e("QuizGeneration", "Error generating batch ${batchNum + 1}: ${e.message}", e)
-                        // Continue with next batch instead of failing completely
-                        withContext(Dispatchers.Main) {
-                            Toast.makeText(
-                                this@QuizGenerationActivity,
-                                "Warning: Batch ${batchNum + 1} failed, continuing with remaining batches...",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
+                        attempt++
+                        val delayTime =
+                            if (e.message?.contains("quota", true) == true)
+                                QUOTA_WAIT
+                            else
+                                (2.0.pow(attempt) * 1000).toLong()
+
+                        delay(delayTime)
                     }
                 }
 
-                if (allQuestions.isEmpty()) {
-                    throw Exception("Failed to generate any questions")
-                }
-
-                Log.d("QuizGeneration", "Successfully generated ${allQuestions.size} total questions")
-
-                // Step 3: Save to database
-                val quizId = withContext(Dispatchers.IO) {
-                    saveQuizToDatabase(url, difficulty, allQuestions)
-                }
-                Log.d("QuizGeneration", "Quiz saved with ID: $quizId")
-
-                // Step 4: Navigate to quiz
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(this@QuizGenerationActivity, "Quiz generated! $${allQuestions.size} questions ready.", Toast.LENGTH_SHORT).show()
-                    goToQuiz(quizId, allQuestions.size)
-                }
-
-            } catch (e: Exception) {
-                Log.e("QuizGeneration", "Error: ${e.message}", e)
-                e.printStackTrace()
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(
-                        this@QuizGenerationActivity,
-                        "Error: ${e.message}",
-                        Toast.LENGTH_LONG
-                    ).show()
-                    binding.btnGenerateQuiz.isEnabled = true
-                    binding.progressBar.visibility = android.view.View.GONE
-                    binding.tvQuestionCountInfo.text = ""
-                }
-            }
-        }
-    }
-
-    /**
-     * Extract text content from URL using Jsoup
-     */
-    private suspend fun extractContentFromUrl(url: String): String {
-        return withContext(Dispatchers.IO) {
-            try {
-                Log.d("URLExtraction", "Connecting to: $url")
-
-                // Fetch and parse the webpage
-                val document = Jsoup.connect(url)
-                    .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
-                    .timeout(15000) // 15 second timeout
-                    .get()
-
-                // Extract title
-                val title = document.title()
-
-                // Extract main content (prioritize article/main content areas)
-                val content = StringBuilder()
-
-                // Try to find main content areas first
-                val mainContent = document.select("article, main, .content, .post-content, .article-content")
-                    .text()
-
-                if (mainContent.isNotEmpty()) {
-                    content.append(mainContent)
-                } else {
-                    // Fallback: extract all paragraph text
-                    val paragraphs = document.select("p")
-                        .map { it.text() }
-                        .filter { it.length > 50 } // Filter out short snippets
-                        .joinToString(" ")
-                    content.append(paragraphs)
-                }
-
-                // Also get heading text for context
-                val headings = document.select("h1, h2, h3")
-                    .map { it.text() }
-                    .joinToString(". ")
-
-                val fullContent = "$title. $headings. ${content.toString()}"
-
-                // Limit content to avoid token limits (approximately 8000 words)
-                val limitedContent = if (fullContent.length > 32000) {
-                    fullContent.substring(0, 32000) + "..."
-                } else {
-                    fullContent
-                }
-
-                Log.d("URLExtraction", "Successfully extracted ${limitedContent.length} characters")
-                limitedContent
-
-            } catch (e: IOException) {
-                Log.e("URLExtraction", "IO Error: ${e.message}", e)
-                throw Exception("Failed to fetch URL: ${e.message}")
-            } catch (e: Exception) {
-                Log.e("URLExtraction", "Error: ${e.message}", e)
-                throw Exception("Failed to extract content: ${e.message}")
-            }
-        }
-    }
-
-    /**
-     * Create prompt with extracted webpage content
-     */
-    private fun createPromptWithContent(content: String, difficulty: String, count: Int): String {
-        return """
-            Based on the following webpage content, generate exactly $count multiple-choice quiz questions at $difficulty difficulty level.
-            
-            WEBPAGE CONTENT:
-            $content
-            
-            Generate questions that test understanding of the key concepts, facts, and information from this content.
-            
-            Return ONLY a valid JSON array with this exact structure (no markdown, no extra text):
-            [
-              {
-                "question": "Question text here?",
-                "options": {
-                  "A": "First option",
-                  "B": "Second option",
-                  "C": "Third option",
-                  "D": "Fourth option"
-                },
-                "correctAnswer": "A"
-              }
-            ]
-            
-            Rules:
-            - Each question must have exactly 4 options (A, B, C, D)
-            - correctAnswer must be one of: "A", "B", "C", or "D"
-            - Questions should be appropriate for $difficulty difficulty
-            - Questions should be directly based on the content provided
-            - Make questions engaging and test real understanding
-            - Return ONLY the JSON array, no extra text before or after
-        """.trimIndent()
-    }
-
-    private fun parseQuestions(responseText: String): List<QuestionEntity> {
-        val questions = mutableListOf<QuestionEntity>()
-
-        try {
-            val cleanedJson = extractValidJson(responseText)
-            Log.d("QuizParsing", "Cleaned JSON: ${cleanedJson.take(200)}...")
-
-            val jsonArray = JSONArray(cleanedJson)
-
-            for (i in 0 until jsonArray.length()) {
-                val jsonObject = jsonArray.getJSONObject(i)
-
-                val questionText = jsonObject.getString("question")
-                val options = jsonObject.getJSONObject("options")
-                val correctAnswerKey = jsonObject.getString("correctAnswer")
-
-                val optionA = options.getString("A")
-                val optionB = options.getString("B")
-                val optionC = options.getString("C")
-                val optionD = options.getString("D")
-
-                val correctAnswerText = when (correctAnswerKey.uppercase()) {
-                    "A" -> optionA
-                    "B" -> optionB
-                    "C" -> optionC
-                    "D" -> optionD
-                    else -> optionA
-                }
-
-                val question = QuestionEntity(
-                    quizOwnerId = 0,
-                    questionText = questionText,
-                    optionA = optionA,
-                    optionB = optionB,
-                    optionC = optionC,
-                    optionD = optionD,
-                    correctOption = correctAnswerText
-                )
-
-                questions.add(question)
-                Log.d("QuizParsing", "Added question ${i + 1}: ${questionText.take(50)}...")
+                delay(BATCH_DELAY)
             }
 
-            Log.d("QuizParsing", "Successfully parsed ${questions.size} questions")
+            val quizId = saveQuiz(source, difficulty, questions)
+            navigateToQuiz(quizId, questions.size)
 
         } catch (e: Exception) {
-            Log.e("QuizParsing", "Error parsing JSON: ${e.message}", e)
-            e.printStackTrace()
-            throw Exception("Failed to parse quiz questions: ${e.message}")
-        }
-
-        return questions
-    }
-
-    private fun extractValidJson(text: String): String {
-        var cleaned = text.trim()
-        cleaned = cleaned.replace("```json", "").replace("```", "").trim()
-
-        val startIndex = cleaned.indexOf('[')
-        val endIndex = cleaned.lastIndexOf(']')
-
-        return if (startIndex != -1 && endIndex != -1 && endIndex > startIndex) {
-            cleaned.substring(startIndex, endIndex + 1)
-        } else {
-            throw Exception("Invalid JSON format in response")
+            showError(e.message)
         }
     }
 
-    private suspend fun saveQuizToDatabase(
-        url: String,
+    private fun buildPrompt(content: String, difficulty: String, count: Int) = """
+        Generate exactly $count multiple-choice questions of $difficulty difficulty.
+
+        CONTENT:
+        $content
+
+        Respond ONLY with valid JSON:
+        [
+          {
+            "question": "Question text",
+            "options": { "A":"...", "B":"...", "C":"...", "D":"..." },
+            "correctAnswer": "A"
+          }
+        ]
+    """.trimIndent()
+
+    private fun parseQuestions(text: String): List<QuestionEntity> {
+        val clean = text.replace("```json", "").replace("```", "")
+        val jsonArray =
+            JSONArray(clean.substring(clean.indexOf('['), clean.lastIndexOf(']') + 1))
+
+        return List(jsonArray.length()) { i ->
+            val obj = jsonArray.getJSONObject(i)
+            val options = obj.getJSONObject("options")
+            val correctKey = obj.getString("correctAnswer")
+
+            QuestionEntity(
+                quizOwnerId = 0,
+                questionText = obj.getString("question"),
+                optionA = options.getString("A"),
+                optionB = options.getString("B"),
+                optionC = options.getString("C"),
+                optionD = options.getString("D"),
+                correctOption = options.getString(correctKey)
+            )
+        }
+    }
+
+    // ---------- DATABASE ----------
+    private suspend fun saveQuiz(
+        source: String,
         difficulty: String,
         questions: List<QuestionEntity>
-    ): Int {
-        return try {
-            Log.d("QuizDatabase", "Saving quiz to database...")
+    ): Int = withContext(Dispatchers.IO) {
 
-            // Extract domain name for title
-            val title = try {
-                val domain = url.substringAfter("://").substringBefore("/")
-                "Quiz from $domain"
-            } catch (e: Exception) {
-                "Quiz from URL"
-            }
+        val quiz = QuizEntity(
+            title = "Generated Quiz",
+            subject = source,
+            difficulty = difficulty,
+            quizType = "Generated",
+            format = "MCQ",
+            totalQuestions = questions.size,
+            createdAt = System.currentTimeMillis()
+        )
 
-            val quiz = QuizEntity(
-                title = title,
-                subject = url,
-                difficulty = difficulty,
-                quizType = "URL Generated",
-                format = "Multiple Choice",
-                totalQuestions = questions.size,
-                createdAt = System.currentTimeMillis()
-            )
+        val quizId = database.quizDao().insertQuiz(quiz).toInt()
 
-            val quizId = db.quizDao().insertQuiz(quiz).toInt()
-            Log.d("QuizDatabase", "Quiz inserted with ID: $quizId")
+        database.questionDao().insertQuestions(
+            questions.map { it.copy(quizOwnerId = quizId) }
+        )
 
-            val questionsWithQuizId = questions.map { it.copy(quizOwnerId = quizId) }
-            db.questionDao().insertQuestions(questionsWithQuizId)
-            Log.d("QuizDatabase", "Inserted ${questionsWithQuizId.size} questions")
-
-            quizId
-
-        } catch (e: Exception) {
-            Log.e("QuizDatabase", "Error saving to database: ${e.message}", e)
-            e.printStackTrace()
-            throw Exception("Failed to save quiz: ${e.message}")
-        }
+        quizId
     }
 
-    private fun goToQuiz(quizId: Int, totalQuestions: Int) {
-        try {
-            Log.d("QuizGeneration", "Navigating to QuizTakingActivity with quizId: $quizId")
-
-            val intent = Intent(this, QuizTakingActivity::class.java).apply {
+    // ---------- NAV ----------
+    private fun navigateToQuiz(quizId: Int, total: Int) {
+        startActivity(
+            Intent(this, QuizTakingActivity::class.java).apply {
                 putExtra("quizId", quizId)
                 putExtra("USERNAME", username)
-                putExtra("totalQuestions", totalQuestions)
+                putExtra("totalQuestions", total)
             }
+        )
+        finish()
+    }
 
-            startActivity(intent)
-            finish()
+    // ---------- HELPERS ----------
+    private fun isValidUrl(url: String) =
+        url.startsWith("http://") || url.startsWith("https://")
 
-        } catch (e: Exception) {
-            Log.e("QuizGeneration", "Error starting QuizTakingActivity: ${e.message}", e)
-            e.printStackTrace()
-            Toast.makeText(this, "Error opening quiz: ${e.message}", Toast.LENGTH_LONG).show()
-            binding.btnGenerateQuiz.isEnabled = true
-            binding.progressBar.visibility = android.view.View.GONE
+    private fun getFileNameFromUri(uri: Uri): String {
+
+        contentResolver.query(uri, null, null, null, null)?.use { cursor ->
+            val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+            if (nameIndex != -1 && cursor.moveToFirst()) {
+                return cursor.getString(nameIndex)
+            }
         }
+
+        return uri.lastPathSegment
+            ?.substringAfterLast('/')
+            ?.substringBefore('?')
+            ?: "Unknown File"
+    }
+
+    private fun toast(msg: String) =
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+
+    private fun showError(msg: String?) {
+        toast(msg ?: "Something went wrong")
+        binding.progressBar.visibility = View.GONE
+        binding.btnGenerateQuiz.isEnabled = true
     }
 }

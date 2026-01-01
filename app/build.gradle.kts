@@ -1,3 +1,4 @@
+// ---------- REQUIRED IMPORTS (Kotlin DSL) ----------
 import java.util.Properties
 import java.io.FileInputStream
 
@@ -11,26 +12,26 @@ android {
     namespace = "com.example.quizzit"
     compileSdk = 36
 
+    // ---------- Load local.properties ----------
+    val localProperties = Properties()
+    val localPropertiesFile = rootProject.file("local.properties")
+    if (localPropertiesFile.exists()) {
+        localProperties.load(FileInputStream(localPropertiesFile))
+    }
+
     defaultConfig {
         applicationId = "com.example.quizzit"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        // ✅ Read API Key from local.properties
-        val localProperties = Properties()
-        val localPropertiesFile = rootProject.file("local.properties")
-        if (localPropertiesFile.exists()) {
-            localProperties.load(FileInputStream(localPropertiesFile))
-        }
-
-        // Add to BuildConfig
+        // ---------- Gemini API Key ----------
         buildConfigField(
             "String",
-            "GEMINI_API_KEY",
-            "\"${localProperties.getProperty("GEMINI_API_KEY", "")}\""
+            "GEMINI_API_KEY1",
+            "\"${localProperties.getProperty("GEMINI_API_KEY1", "")}\""
         )
     }
 
@@ -44,6 +45,7 @@ android {
         }
     }
 
+    // ---------- Java / Kotlin ----------
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
@@ -53,27 +55,59 @@ android {
         jvmTarget = "11"
     }
 
+    // ---------- Features ----------
     buildFeatures {
         viewBinding = true
         buildConfig = true
     }
+
+    // ---------- Packaging Conflict Fixes ----------
+    packaging {
+        pickFirst("**/LICENSE")
+        pickFirst("**/META-INF/DEPENDENCIES")
+    }
+}
+
+// ---------- Dependency Resolution (BC Conflict Fix) ----------
+configurations.all {
+    resolutionStrategy {
+        eachDependency {
+            if (requested.group == "org.bouncycastle") {
+                useTarget(
+                    "org.bouncycastle:bcprov-jdk18on:1.78"
+                )
+            }
+        }
+        exclude(group = "org.apache.xmlbeans", module = "xmlbeans")
+    }
 }
 
 dependencies {
-    // ---------- Core Android (Using libs.versions.toml) ----------
+
+    // ---------- Core Android ----------
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
 
-    // ✅ Google AI SDK (Gemini)
+    // ---------- Google Gemini AI ----------
     implementation("com.google.ai.client.generativeai:generativeai:0.9.0")
 
-    // ✅ Jsoup for URL content extraction
+    // ---------- HTML Parsing ----------
     implementation("org.jsoup:jsoup:1.17.2")
 
-    // ---------- Room Database ----------
+    // ---------- PDF ----------
+    implementation("com.tom-roush:pdfbox-android:2.0.27.0")
+
+    // ---------- DOC ----------
+    implementation("org.apache.poi:poi:5.3.0")
+
+    // ---------- Crypto ----------
+    implementation("org.bouncycastle:bcprov-jdk18on:1.78")
+    implementation("org.bouncycastle:bcpkix-jdk18on:1.78")
+
+    // ---------- Room ----------
     val roomVersion = "2.6.1"
     implementation("androidx.room:room-runtime:$roomVersion")
     implementation("androidx.room:room-ktx:$roomVersion")
@@ -90,10 +124,8 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion")
 
-    // ---------- RecyclerView ----------
+    // ---------- UI ----------
     implementation("androidx.recyclerview:recyclerview:1.3.2")
-
-    // ---------- CardView ----------
     implementation("androidx.cardview:cardview:1.0.0")
 
     // ---------- Testing ----------

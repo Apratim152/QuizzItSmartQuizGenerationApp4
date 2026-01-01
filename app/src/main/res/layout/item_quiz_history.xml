@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="12dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="4dp"
+    app:cardBackgroundColor="@color/white">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+        <!-- Quiz Title -->
+        <TextView
+            android:id="@+id/tvQuizTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Quiz Title"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/cardview_dark_background"
+            android:maxLines="2"
+            android:ellipsize="end" />
+        <!-- Info Row 1: Difficulty, Questions, Type -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="12dp"
+            android:gravity="center_vertical">
+            <!-- Difficulty Badge -->
+            <TextView
+                android:id="@+id/tvDifficulty"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="EASY"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:textColor="@color/white"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="4dp"
+                android:layout_marginEnd="8dp" />
+            <!-- Question Count -->
+            <TextView
+                android:id="@+id/tvQuestionCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="10 Questions"
+                android:textSize="12sp"
+                android:textColor="@android:color/darker_gray"
+                android:layout_marginEnd="8dp" />
+            <!-- Quiz Type -->
+            <TextView
+                android:id="@+id/tvQuizType"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Generated"
+                android:textSize="10sp"
+                android:textColor="@android:color/darker_gray"
+                android:layout_marginEnd="8dp" />
+        </LinearLayout>
+        <!-- Date Created -->
+        <TextView
+            android:id="@+id/tvDateCreated"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Dec 29, 2025"
+            android:textSize="11sp"
+            android:textColor="@android:color/darker_gray"
+            android:layout_marginTop="8dp" />
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

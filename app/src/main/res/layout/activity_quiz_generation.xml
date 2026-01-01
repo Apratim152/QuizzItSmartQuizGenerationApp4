@@ -26,23 +26,112 @@
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginTop="16dp" />
 
-        <!-- Topic Input -->
+        <!-- ✅ FILE PICKER SECTION -->
+        <TextView
+            android:id="@+id/tvFileOption"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Option 1: Upload File"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="@color/cardview_dark_background"
+            app:layout_constraintTop_toBottomOf="@id/tvTitle"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="24dp" />
+
+        <Button
+            android:id="@+id/btnChooseFile"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:text="📁 Choose File"
+            android:textSize="14sp"
+            app:layout_constraintTop_toBottomOf="@id/tvFileOption"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/btnClearFile"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp" />
+
+        <Button
+            android:id="@+id/btnClearFile"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:text="✕ Clear"
+            android:textSize="14sp"
+            android:backgroundTint="#FF6B6B"
+            app:layout_constraintTop_toBottomOf="@id/tvFileOption"
+            app:layout_constraintStart_toEndOf="@id/btnChooseFile"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="8dp" />
+
+        <TextView
+            android:id="@+id/tvSelectedFile"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textSize="12sp"
+            android:textColor="#4CAF50"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/btnChooseFile"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="8dp" />
+
+        <TextView
+            android:id="@+id/tvSupportedFormats"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Supported: TXT, PDF, DOCX"
+            android:textSize="10sp"
+            android:textColor="#999999"
+            app:layout_constraintTop_toBottomOf="@id/tvSelectedFile"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="4dp" />
+
+        <!-- OR Divider -->
+        <TextView
+            android:id="@+id/tvOrDivider"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="OR"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:textColor="@color/cardview_dark_background"
+            app:layout_constraintTop_toBottomOf="@id/tvSupportedFormats"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="16dp" />
+
+        <!-- ✅ URL INPUT SECTION -->
+        <TextView
+            android:id="@+id/tvUrlOption"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Option 2: Enter URL"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="@color/cardview_dark_background"
+            app:layout_constraintTop_toBottomOf="@id/tvOrDivider"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="16dp" />
+
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tilTopic"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:hint="Quiz Topic"
+            android:hint="Enter URL (e.g., https://example.com)"
             app:boxBackgroundMode="outline"
-            app:layout_constraintTop_toBottomOf="@id/tvTitle"
+            app:layout_constraintTop_toBottomOf="@id/tvUrlOption"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="32dp">
+            android:layout_marginTop="8dp">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etTopic"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="text"
+                android:inputType="textUri"
                 android:maxLines="1" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -87,7 +176,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="number"
-                android:text="5"
+                android:text="10"
                 android:maxLines="1" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -102,7 +191,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginTop="32dp" />
 
-        <!-- Progress Info Text (NEW) -->
+        <!-- Progress Info Text -->
         <TextView
             android:id="@+id/tvQuestionCountInfo"
             android:layout_width="0dp"
@@ -135,7 +224,7 @@
             android:id="@+id/tvInfo"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="AI will generate personalized quiz questions based on your topic and difficulty level."
+            android:text="AI will generate personalized quiz questions based on your content and difficulty level."
             android:textSize="12sp"
             android:textColor="@android:color/darker_gray"
             android:gravity="center"

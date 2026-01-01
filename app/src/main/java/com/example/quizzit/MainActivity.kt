@@ -29,6 +29,13 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+        // ✅ NEW: Navigate to Quiz History
+        binding.btnViewHistory.setOnClickListener {
+            val intent = Intent(this, QuizHistoryActivity::class.java)
+            intent.putExtra("USERNAME", username)
+            startActivity(intent)
+        }
+
         // Navigate to Leaderboard
         binding.btnLeaderboard.setOnClickListener {
             val intent = Intent(this, LeaderboardActivity::class.java)
