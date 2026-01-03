@@ -3,182 +3,327 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="#F6F7FB"
     android:fillViewport="true">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="24dp">
+        android:padding="20dp">
 
-        <!-- Title -->
+        <!-- Header -->
         <TextView
             android:id="@+id/tvTitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Generate AI Quiz"
+            android:text="🤖 Generate AI Quiz"
             android:textSize="28sp"
             android:textStyle="bold"
-            android:textColor="@color/cardview_dark_background"
+            android:textColor="#6C63FF"
             android:gravity="center"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="16dp" />
-
-        <!-- ✅ FILE PICKER SECTION -->
-        <TextView
-            android:id="@+id/tvFileOption"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="Option 1: Upload File"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            android:textColor="@color/cardview_dark_background"
-            app:layout_constraintTop_toBottomOf="@id/tvTitle"
-            app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginTop="24dp" />
-
-        <Button
-            android:id="@+id/btnChooseFile"
-            android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:text="📁 Choose File"
-            android:textSize="14sp"
-            app:layout_constraintTop_toBottomOf="@id/tvFileOption"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/btnClearFile"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp" />
-
-        <Button
-            android:id="@+id/btnClearFile"
-            android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:text="✕ Clear"
-            android:textSize="14sp"
-            android:backgroundTint="#FF6B6B"
-            app:layout_constraintTop_toBottomOf="@id/tvFileOption"
-            app:layout_constraintStart_toEndOf="@id/btnChooseFile"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="8dp"
-            android:layout_marginStart="8dp" />
-
-        <TextView
-            android:id="@+id/tvSelectedFile"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text=""
-            android:textSize="12sp"
-            android:textColor="#4CAF50"
-            android:visibility="gone"
-            app:layout_constraintTop_toBottomOf="@id/btnChooseFile"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginTop="8dp" />
 
         <TextView
-            android:id="@+id/tvSupportedFormats"
+            android:id="@+id/tvSubtitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Supported: TXT, PDF, DOCX"
-            android:textSize="10sp"
-            android:textColor="#999999"
-            app:layout_constraintTop_toBottomOf="@id/tvSelectedFile"
+            android:text="Choose your content source"
+            android:textSize="14sp"
+            android:textColor="#666666"
+            android:gravity="center"
+            app:layout_constraintTop_toBottomOf="@id/tvTitle"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginTop="4dp" />
 
-        <!-- OR Divider -->
-        <TextView
-            android:id="@+id/tvOrDivider"
+        <!-- FILE OPTION CARD -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardFileOption"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="OR"
-            android:textStyle="bold"
-            android:gravity="center"
-            android:textColor="@color/cardview_dark_background"
-            app:layout_constraintTop_toBottomOf="@id/tvSupportedFormats"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="16dp" />
-
-        <!-- ✅ URL INPUT SECTION -->
-        <TextView
-            android:id="@+id/tvUrlOption"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="Option 2: Enter URL"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            android:textColor="@color/cardview_dark_background"
-            app:layout_constraintTop_toBottomOf="@id/tvOrDivider"
-            app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginTop="16dp" />
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tilTopic"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:hint="Enter URL (e.g., https://example.com)"
-            app:boxBackgroundMode="outline"
-            app:layout_constraintTop_toBottomOf="@id/tvUrlOption"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="8dp">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etTopic"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textUri"
-                android:maxLines="1" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <!-- Difficulty Spinner -->
-        <TextView
-            android:id="@+id/tvDifficultyLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Difficulty Level"
-            android:textSize="14sp"
-            android:textColor="@color/cardview_dark_background"
-            app:layout_constraintTop_toBottomOf="@id/tilTopic"
-            app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginTop="24dp" />
-
-        <Spinner
-            android:id="@+id/spinnerDifficulty"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:entries="@array/difficulty_levels"
-            android:padding="12dp"
-            android:background="@android:drawable/edit_text"
-            app:layout_constraintTop_toBottomOf="@id/tvDifficultyLabel"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="8dp" />
-
-        <!-- Question Count Input -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tilQuestionCount"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:hint="Number of Questions (1-100)"
-            app:boxBackgroundMode="outline"
-            app:layout_constraintTop_toBottomOf="@id/spinnerDifficulty"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="4dp"
+            app:strokeWidth="2dp"
+            app:strokeColor="#E0E0E0"
+            app:cardBackgroundColor="@android:color/white"
+            app:layout_constraintTop_toBottomOf="@id/tvSubtitle"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginTop="24dp">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etQuestionCount"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="number"
-                android:text="10"
-                android:maxLines="1" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <TextView
+                    android:id="@+id/tvFileOption"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="📄 Option 1: Upload File"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="#3F3D56" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="16dp">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnChooseFile"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_weight="1"
+                        android:text="Choose File"
+                        android:textSize="14sp"
+                        android:textAllCaps="false"
+                        app:cornerRadius="12dp"
+                        app:backgroundTint="#6C63FF"
+                        android:layout_marginEnd="8dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnClearFile"
+                        android:layout_width="wrap_content"
+                        android:layout_height="50dp"
+                        android:text="Clear"
+                        android:textSize="14sp"
+                        android:textAllCaps="false"
+                        style="@style/Widget.Material3.Button.OutlinedButton"
+                        app:cornerRadius="12dp"
+                        app:strokeColor="#FF6B6B"
+                        android:textColor="#FF6B6B"
+                        android:layout_marginStart="8dp" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tvSelectedFile"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:textSize="13sp"
+                    android:textColor="#4CAF50"
+                    android:textStyle="bold"
+                    android:visibility="gone"
+                    android:layout_marginTop="12dp" />
+
+                <TextView
+                    android:id="@+id/tvSupportedFormats"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Supported formats: TXT, PDF, DOCX"
+                    android:textSize="11sp"
+                    android:textColor="#999999"
+                    android:layout_marginTop="8dp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- OR Divider -->
+        <LinearLayout
+            android:id="@+id/dividerLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            app:layout_constraintTop_toBottomOf="@id/cardFileOption"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="20dp">
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1"
+                android:background="#E0E0E0" />
+
+            <TextView
+                android:id="@+id/tvOrDivider"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="OR"
+                android:textStyle="bold"
+                android:textSize="12sp"
+                android:textColor="#999999"
+                android:paddingHorizontal="16dp" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1"
+                android:background="#E0E0E0" />
+        </LinearLayout>
+
+        <!-- URL OPTION CARD -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardUrlOption"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="4dp"
+            app:strokeWidth="2dp"
+            app:strokeColor="#E0E0E0"
+            app:cardBackgroundColor="@android:color/white"
+            app:layout_constraintTop_toBottomOf="@id/dividerLayout"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="20dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <TextView
+                    android:id="@+id/tvUrlOption"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="🌐 Option 2: Enter URL"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="#3F3D56" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilTopic"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="https://example.com/article"
+                    app:boxBackgroundMode="outline"
+                    app:boxCornerRadiusTopStart="12dp"
+                    app:boxCornerRadiusTopEnd="12dp"
+                    app:boxCornerRadiusBottomStart="12dp"
+                    app:boxCornerRadiusBottomEnd="12dp"
+                    app:errorEnabled="true"
+                    app:helperText="Enter a valid webpage URL"
+                    app:helperTextEnabled="true"
+                    android:layout_marginTop="16dp">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etTopic"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textUri"
+                        android:maxLines="2" />
+                </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- QUIZ SETTINGS CARD -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardSettings"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="4dp"
+            app:strokeWidth="2dp"
+            app:strokeColor="#E0E0E0"
+            app:cardBackgroundColor="@android:color/white"
+            app:layout_constraintTop_toBottomOf="@id/cardUrlOption"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="24dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="⚙️ Quiz Settings"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="#3F3D56"
+                    android:layout_marginBottom="16dp" />
+
+                <!-- Difficulty -->
+                <TextView
+                    android:id="@+id/tvDifficultyLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Difficulty Level"
+                    android:textSize="14sp"
+                    android:textColor="#3F3D56"
+                    android:textStyle="bold" />
+
+                <Spinner
+                    android:id="@+id/spinnerDifficulty"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:entries="@array/difficulty_levels"
+                    android:padding="12dp"
+                    android:background="@android:drawable/editbox_background"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="16dp" />
+
+                <!-- Question Count -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilQuestionCount"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Number of Questions (1-100)"
+                    app:boxBackgroundMode="outline"
+                    app:boxCornerRadiusTopStart="12dp"
+                    app:boxCornerRadiusTopEnd="12dp"
+                    app:boxCornerRadiusBottomStart="12dp"
+                    app:boxCornerRadiusBottomEnd="12dp"
+                    app:helperText="Default: 10 questions"
+                    app:helperTextEnabled="true"
+                    app:errorEnabled="true"
+                    android:layout_marginBottom="16dp">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etQuestionCount"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number"
+                        android:text="10"
+                        android:maxLines="1" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Total Time Input -->
+                <TextView
+                    android:id="@+id/tvTimeLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="⏱️ Total Quiz Time"
+                    android:textSize="14sp"
+                    android:textColor="#3F3D56"
+                    android:textStyle="bold" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilTotalTime"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Time in minutes (e.g., 30)"
+                    app:boxBackgroundMode="outline"
+                    app:boxCornerRadiusTopStart="12dp"
+                    app:boxCornerRadiusTopEnd="12dp"
+                    app:boxCornerRadiusBottomStart="12dp"
+                    app:boxCornerRadiusBottomEnd="12dp"
+                    app:helperText="Leave empty for no time limit"
+                    app:helperTextEnabled="true"
+                    app:suffixText="min"
+                    android:layout_marginTop="8dp">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etTotalTime"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number"
+                        android:text=""
+                        android:maxLines="1" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
         <!-- Progress Bar -->
         <ProgressBar
@@ -186,10 +331,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="gone"
-            app:layout_constraintTop_toBottomOf="@id/tilQuestionCount"
+            app:layout_constraintTop_toBottomOf="@id/cardSettings"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="32dp" />
+            android:layout_marginTop="24dp" />
 
         <!-- Progress Info Text -->
         <TextView
@@ -197,8 +342,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text=""
-            android:textSize="12sp"
-            android:textColor="@android:color/holo_blue_dark"
+            android:textSize="13sp"
+            android:textColor="#6C63FF"
+            android:textStyle="bold"
             android:gravity="center"
             android:visibility="gone"
             app:layout_constraintTop_toBottomOf="@id/progressBar"
@@ -207,17 +353,20 @@
             android:layout_marginTop="8dp" />
 
         <!-- Generate Button -->
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnGenerateQuiz"
             android:layout_width="0dp"
             android:layout_height="56dp"
             android:text="Generate Quiz with AI"
             android:textSize="16sp"
             android:textStyle="bold"
+            android:textAllCaps="false"
+            app:cornerRadius="16dp"
+            app:backgroundTint="#6C63FF"
             app:layout_constraintTop_toBottomOf="@id/tvQuestionCountInfo"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="32dp" />
+            android:layout_marginTop="24dp" />
 
         <!-- Info Text -->
         <TextView
@@ -226,12 +375,13 @@
             android:layout_height="wrap_content"
             android:text="AI will generate personalized quiz questions based on your content and difficulty level."
             android:textSize="12sp"
-            android:textColor="@android:color/darker_gray"
+            android:textColor="#999999"
             android:gravity="center"
             app:layout_constraintTop_toBottomOf="@id/btnGenerateQuiz"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="16dp" />
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="24dp" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

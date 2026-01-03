@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F6F7FB">
+    android:background="#F6F7FB"
+    android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -11,16 +13,50 @@
         android:orientation="vertical"
         android:padding="24dp">
 
-        <TextView
-            android:id="@+id/tvQuizTitle"
-            android:layout_width="wrap_content"
+        <!-- Header: Title + Timer -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Quiz Title"
-            android:textSize="26sp"
-            android:textStyle="bold"
-            android:textColor="#6C63FF"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="16dp"/>
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="16dp">
+
+            <TextView
+                android:id="@+id/tvQuizTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Quiz Title"
+                android:textSize="26sp"
+                android:textStyle="bold"
+                android:textColor="#6C63FF"/>
+
+            <!-- Timer -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center_horizontal"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="8dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Time"
+                    android:textSize="10sp"
+                    android:textColor="#666666"/>
+
+                <TextView
+                    android:id="@+id/tvTimer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="30:00"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@android:color/holo_green_dark"/>
+            </LinearLayout>
+        </LinearLayout>
 
         <!-- Question Counter -->
         <TextView
@@ -30,7 +66,17 @@
             android:text="Question 1 of 10"
             android:textSize="14sp"
             android:textColor="#3F3D56"
-        android:layout_marginBottom="12dp"/>
+            android:layout_marginBottom="8dp"/>
+
+        <!-- Progress Bar -->
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="@android:style/Widget.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="6dp"
+            android:progress="0"
+            android:layout_marginBottom="16dp"
+            android:progressDrawable="@android:drawable/progress_horizontal"/>
 
         <!-- Question Card -->
         <com.google.android.material.card.MaterialCardView
@@ -40,6 +86,7 @@
             app:cardElevation="10dp"
             app:strokeWidth="1dp"
             app:strokeColor="#E0E0E0"
+            app:cardBackgroundColor="@android:color/white"
             android:layout_marginBottom="24dp">
 
             <LinearLayout
@@ -55,47 +102,63 @@
                     android:layout_height="wrap_content"
                     android:text="Here goes the question text..."
                     android:textSize="18sp"
-                    android:textColor="@color/white"
-                android:layout_marginBottom="20dp"/>
+                    android:textStyle="bold"
+                    android:textColor="#3F3D56"
+                    android:layout_marginBottom="20dp"/>
 
-                <!-- Option 1 -->
-                <RadioButton
-                    android:id="@+id/rbOption1"
+                <!-- Options -->
+                <RadioGroup
+                    android:id="@+id/rgOptions"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Option 1"
-                    android:textSize="16sp"
-                    android:textColor="@color/white"
-                    android:layout_marginBottom="12dp"/>
+                    android:layout_height="wrap_content">
 
-                <!-- Option 2 -->
-                <RadioButton
-                    android:id="@+id/rbOption2"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Option 2"
-                    android:textSize="16sp"
-                    android:textColor="@color/white"
-                    android:layout_marginBottom="12dp"/>
+                    <RadioButton
+                        android:id="@+id/rbOption1"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:text="Option 1"
+                        android:textSize="16sp"
+                        android:textColor="#3F3D56"
+                        android:paddingStart="16dp"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="12dp"
+                        android:background="#F6F7FB"/>
 
-                <!-- Option 3 -->
-                <RadioButton
-                    android:id="@+id/rbOption3"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Option 3"
-                    android:textSize="16sp"
-                    android:textColor="@color/white"
-                    android:layout_marginBottom="12dp"/>
+                    <RadioButton
+                        android:id="@+id/rbOption2"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:text="Option 2"
+                        android:textSize="16sp"
+                        android:textColor="#3F3D56"
+                        android:paddingStart="16dp"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="12dp"
+                        android:background="#F6F7FB"/>
 
-                <!-- Option 4 -->
-                <RadioButton
-                    android:id="@+id/rbOption4"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Option 4"
-                    android:textSize="16sp"
-                    android:textColor="@color/white"/>
+                    <RadioButton
+                        android:id="@+id/rbOption3"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:text="Option 3"
+                        android:textSize="16sp"
+                        android:textColor="#3F3D56"
+                        android:paddingStart="16dp"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="12dp"
+                        android:background="#F6F7FB"/>
+
+                    <RadioButton
+                        android:id="@+id/rbOption4"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:text="Option 4"
+                        android:textSize="16sp"
+                        android:textColor="#3F3D56"
+                        android:paddingStart="16dp"
+                        android:gravity="center_vertical"
+                        android:background="#F6F7FB"/>
+                </RadioGroup>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
@@ -108,9 +171,12 @@
             android:textSize="16sp"
             android:textAllCaps="false"
             android:textColor="@android:color/white"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
             app:backgroundTint="#6C63FF"
-        app:cornerRadius="16dp"
-        android:layout_marginBottom="12dp"/>
+            app:rippleColor="#30FFFFFF"
+            app:cornerRadius="16dp"
+            android:layout_marginBottom="12dp"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSubmit"
@@ -120,8 +186,11 @@
             android:textSize="16sp"
             android:textAllCaps="false"
             android:textColor="@android:color/white"
-            app:backgroundTint="#6C63FF"
-        app:cornerRadius="16dp"/>
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            app:backgroundTint="#4CAF50"
+            app:rippleColor="#30FFFFFF"
+            app:cornerRadius="16dp"/>
 
     </LinearLayout>
-</ScrollView>
+</androidx.core.widget.NestedScrollView>

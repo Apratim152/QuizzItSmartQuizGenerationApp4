@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- ===== Material default colors (optional but safe to keep) ===== -->
+    <!-- ===== Material default colors ===== -->
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>
@@ -12,18 +12,43 @@
 
     <!-- ===== Brand / Primary colors ===== -->
     <color name="primary">#6C63FF</color>
-    <!-- Keeping this for backward compatibility if already used -->
+    <color name="primary_dark">#4B42FF</color>
+    <color name="primary_light">#F3F2FF</color>
     <color name="primary_color">#FF6200EE</color>
 
     <!-- ===== Background colors ===== -->
     <color name="bg_light">#F6F7FB</color>
     <color name="background_color">#F5F5F5</color>
+    <color name="surface">#FFFFFF</color>
 
     <!-- ===== Text colors ===== -->
     <color name="text_primary">#1F2937</color>
     <color name="text_secondary">#6B7280</color>
+    <color name="text_hint">#999999</color>
+    <color name="text_disabled">#CCCCCC</color>
 
-    <!-- ===== Special UI states ===== -->
+    <!-- ===== Success / Warning / Error colors ===== -->
+    <color name="success">#4CAF50</color>
+    <color name="success_light">#E8F5E9</color>
+    <color name="warning">#FF9800</color>
+    <color name="warning_light">#FFF3E0</color>
+    <color name="error">#F44336</color>
+    <color name="error_light">#FFEBEE</color>
+
+    <!-- ===== Difficulty badge colors ===== -->
+    <color name="difficulty_easy">#4CAF50</color>
+    <color name="difficulty_medium">#FF9800</color>
+    <color name="difficulty_hard">#F44336</color>
+
+    <!-- ===== UI State colors ===== -->
     <color name="highlight_current_user">#E3F2FD</color>
+    <color name="divider">#E5E7EB</color>
+    <color name="card_background">#FFFFFF</color>
+    <color name="overlay">#80000000</color>
+
+    <!-- ===== Button colors ===== -->
+    <color name="button_primary">#6C63FF</color>
+    <color name="button_secondary">#FF9800</color>
+    <color name="button_success">#4CAF50</color>
 
 </resources>
