@@ -2,10 +2,12 @@
 <androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#F6F7FB"
-    android:fillViewport="true">
+    android:fillViewport="true"
+    android:focusableInTouchMode="true">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -13,7 +15,7 @@
         android:orientation="vertical"
         android:padding="24dp">
 
-        <!-- Header: Title + Timer -->
+        <!-- ================= HEADER ================= -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -31,14 +33,11 @@
                 android:textStyle="bold"
                 android:textColor="#6C63FF"/>
 
-            <!-- Timer -->
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:gravity="center_horizontal"
-                android:paddingHorizontal="12dp"
-                android:paddingVertical="8dp">
+                android:gravity="center">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -54,11 +53,11 @@
                     android:text="30:00"
                     android:textSize="18sp"
                     android:textStyle="bold"
-                    android:textColor="@android:color/holo_green_dark"/>
+                    android:textColor="#4CAF50"/>
             </LinearLayout>
         </LinearLayout>
 
-        <!-- Question Counter -->
+        <!-- ================= QUESTION COUNT ================= -->
         <TextView
             android:id="@+id/tvQuestionNumber"
             android:layout_width="wrap_content"
@@ -68,25 +67,25 @@
             android:textColor="#3F3D56"
             android:layout_marginBottom="8dp"/>
 
-        <!-- Progress Bar -->
+        <!-- ================= PROGRESS ================= -->
         <ProgressBar
             android:id="@+id/progressBar"
             style="@android:style/Widget.ProgressBar.Horizontal"
             android:layout_width="match_parent"
             android:layout_height="6dp"
-            android:progress="0"
-            android:layout_marginBottom="16dp"
-            android:progressDrawable="@android:drawable/progress_horizontal"/>
+            android:progressTint="#6C63FF"
+            android:backgroundTint="#E0E0E0"
+            android:layout_marginBottom="16dp"/>
 
-        <!-- Question Card -->
+        <!-- ================= QUESTION CARD ================= -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:cardCornerRadius="20dp"
-            app:cardElevation="10dp"
-            app:strokeWidth="1dp"
-            app:strokeColor="#E0E0E0"
+            app:cardElevation="8dp"
             app:cardBackgroundColor="@android:color/white"
+            app:strokeColor="#E0E0E0"
+            app:strokeWidth="1dp"
             android:layout_marginBottom="24dp">
 
             <LinearLayout
@@ -95,7 +94,6 @@
                 android:orientation="vertical"
                 android:padding="20dp">
 
-                <!-- Question Text -->
                 <TextView
                     android:id="@+id/tvQuestionText"
                     android:layout_width="match_parent"
@@ -106,7 +104,7 @@
                     android:textColor="#3F3D56"
                     android:layout_marginBottom="20dp"/>
 
-                <!-- Options -->
+                <!-- ================= OPTIONS ================= -->
                 <RadioGroup
                     android:id="@+id/rgOptions"
                     android:layout_width="match_parent"
@@ -115,82 +113,98 @@
                     <RadioButton
                         android:id="@+id/rbOption1"
                         android:layout_width="match_parent"
-                        android:layout_height="48dp"
+                        android:layout_height="56dp"
                         android:text="Option 1"
                         android:textSize="16sp"
-                        android:textColor="#3F3D56"
-                        android:paddingStart="16dp"
-                        android:gravity="center_vertical"
-                        android:layout_marginBottom="12dp"
-                        android:background="#F6F7FB"/>
+                        android:textColor="#000000"
+                        android:buttonTint="#6C63FF"
+                        android:background="@drawable/option_bg"
+                        android:padding="16dp"
+                        android:layout_marginBottom="12dp"/>
 
                     <RadioButton
                         android:id="@+id/rbOption2"
                         android:layout_width="match_parent"
-                        android:layout_height="48dp"
+                        android:layout_height="56dp"
                         android:text="Option 2"
                         android:textSize="16sp"
-                        android:textColor="#3F3D56"
-                        android:paddingStart="16dp"
-                        android:gravity="center_vertical"
-                        android:layout_marginBottom="12dp"
-                        android:background="#F6F7FB"/>
+                        android:textColor="#000000"
+                        android:buttonTint="#6C63FF"
+                        android:background="@drawable/option_bg"
+                        android:padding="16dp"
+                        android:layout_marginBottom="12dp"/>
 
                     <RadioButton
                         android:id="@+id/rbOption3"
                         android:layout_width="match_parent"
-                        android:layout_height="48dp"
+                        android:layout_height="56dp"
                         android:text="Option 3"
                         android:textSize="16sp"
-                        android:textColor="#3F3D56"
-                        android:paddingStart="16dp"
-                        android:gravity="center_vertical"
-                        android:layout_marginBottom="12dp"
-                        android:background="#F6F7FB"/>
+                        android:textColor="#000000"
+                        android:buttonTint="#6C63FF"
+                        android:background="@drawable/option_bg"
+                        android:padding="16dp"
+                        android:layout_marginBottom="12dp"/>
 
                     <RadioButton
                         android:id="@+id/rbOption4"
                         android:layout_width="match_parent"
-                        android:layout_height="48dp"
+                        android:layout_height="56dp"
                         android:text="Option 4"
                         android:textSize="16sp"
-                        android:textColor="#3F3D56"
-                        android:paddingStart="16dp"
-                        android:gravity="center_vertical"
-                        android:background="#F6F7FB"/>
+                        android:textColor="#000000"
+                        android:buttonTint="#6C63FF"
+                        android:background="@drawable/option_bg"
+                        android:padding="16dp"/>
                 </RadioGroup>
+
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Buttons -->
+        <!-- ================= BUTTONS ================= -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnNextQuestion"
             android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:text="Next Question"
+            android:layout_height="60dp"
+            android:text="Next Question →"
             android:textSize="16sp"
             android:textAllCaps="false"
             android:textColor="@android:color/white"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
             app:backgroundTint="#6C63FF"
-            app:rippleColor="#30FFFFFF"
             app:cornerRadius="16dp"
             android:layout_marginBottom="12dp"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSubmit"
             android:layout_width="match_parent"
-            android:layout_height="52dp"
+            android:layout_height="60dp"
             android:text="Submit Quiz"
             android:textSize="16sp"
             android:textAllCaps="false"
             android:textColor="@android:color/white"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
             app:backgroundTint="#4CAF50"
-            app:rippleColor="#30FFFFFF"
-            app:cornerRadius="16dp"/>
+            app:cornerRadius="16dp"
+            android:layout_marginBottom="12dp"
+            android:visibility="gone"
+            tools:visibility="visible"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnPrevious"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:text="← Previous Question"
+            android:textSize="16sp"
+            android:textAllCaps="false"
+            android:textColor="#6C63FF"
+            app:strokeColor="#6C63FF"
+            app:cornerRadius="16dp"
+            android:visibility="gone"
+            tools:visibility="visible"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="24dp"/>
 
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>
