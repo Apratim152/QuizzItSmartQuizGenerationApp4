@@ -16,6 +16,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.QuizzItSmartQuizGenerationApp2">
 
+        <!-- Google Mobile Ads SDK Configuration -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-3940256099942544~3347511713" />
+
         <!-- Splash Screen (Launcher) -->
         <activity
             android:name=".SplashActivity"
@@ -29,11 +34,11 @@
 
         <activity
             android:name=".LoginCredentials"
-            android:exported="false" />
+            android:exported="true" />
 
         <activity
             android:name=".MainActivity"
-            android:exported="false" />
+            android:exported="true" />
 
         <activity
             android:name=".QuizGenerationActivity"

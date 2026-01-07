@@ -120,6 +120,7 @@ class QuizTakingActivity : AppCompatActivity() {
         binding.tvQuestionNumber.text = "Question ${index + 1} of ${questionList.size}"
         binding.tvQuestionText.text = q.questionText
 
+        // Set option text
         binding.rbOption1.text = q.optionA
         binding.rbOption2.text = q.optionB
         binding.rbOption3.text = q.optionC

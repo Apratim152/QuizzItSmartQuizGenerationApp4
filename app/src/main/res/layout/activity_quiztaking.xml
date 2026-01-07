@@ -113,49 +113,53 @@
                     <RadioButton
                         android:id="@+id/rbOption1"
                         android:layout_width="match_parent"
-                        android:layout_height="56dp"
+                        android:layout_height="wrap_content"
                         android:text="Option 1"
                         android:textSize="16sp"
                         android:textColor="#000000"
                         android:buttonTint="#6C63FF"
                         android:background="@drawable/option_bg"
                         android:padding="16dp"
-                        android:layout_marginBottom="12dp"/>
+                        android:layout_marginBottom="12dp"
+                        android:minHeight="56dp"/>
 
                     <RadioButton
                         android:id="@+id/rbOption2"
                         android:layout_width="match_parent"
-                        android:layout_height="56dp"
+                        android:layout_height="wrap_content"
                         android:text="Option 2"
                         android:textSize="16sp"
                         android:textColor="#000000"
                         android:buttonTint="#6C63FF"
                         android:background="@drawable/option_bg"
                         android:padding="16dp"
-                        android:layout_marginBottom="12dp"/>
+                        android:layout_marginBottom="12dp"
+                        android:minHeight="56dp"/>
 
                     <RadioButton
                         android:id="@+id/rbOption3"
                         android:layout_width="match_parent"
-                        android:layout_height="56dp"
+                        android:layout_height="wrap_content"
                         android:text="Option 3"
                         android:textSize="16sp"
                         android:textColor="#000000"
                         android:buttonTint="#6C63FF"
                         android:background="@drawable/option_bg"
                         android:padding="16dp"
-                        android:layout_marginBottom="12dp"/>
+                        android:layout_marginBottom="12dp"
+                        android:minHeight="56dp"/>
 
                     <RadioButton
                         android:id="@+id/rbOption4"
                         android:layout_width="match_parent"
-                        android:layout_height="56dp"
+                        android:layout_height="wrap_content"
                         android:text="Option 4"
                         android:textSize="16sp"
                         android:textColor="#000000"
                         android:buttonTint="#6C63FF"
                         android:background="@drawable/option_bg"
-                        android:padding="16dp"/>
+                        android:padding="16dp"
+                        android:minHeight="56dp"/>
                 </RadioGroup>
 
             </LinearLayout>

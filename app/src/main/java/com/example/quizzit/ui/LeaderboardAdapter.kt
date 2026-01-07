@@ -46,17 +46,17 @@ class LeaderboardAdapter(
                 quizzesCompletedTextView.text = "${user.quizzesCompleted} quizzes"
                 averageScoreTextView.text = "Avg: ${String.format("%.1f", user.averageScore)}%"
 
-                // Highlight current user
+                // Highlight current user with subtle background
                 if (user.username == currentUsername) {
-                    root.setBackgroundColor(
+                    root.setCardBackgroundColor(
                         ContextCompat.getColor(root.context, R.color.highlight_current_user)
                     )
                     usernameTextView.setTextColor(
                         ContextCompat.getColor(root.context, R.color.primary_color)
                     )
                 } else {
-                    root.setBackgroundColor(
-                        ContextCompat.getColor(root.context, android.R.color.transparent)
+                    root.setCardBackgroundColor(
+                        ContextCompat.getColor(root.context, android.R.color.white)
                     )
                     usernameTextView.setTextColor(
                         ContextCompat.getColor(root.context, android.R.color.black)

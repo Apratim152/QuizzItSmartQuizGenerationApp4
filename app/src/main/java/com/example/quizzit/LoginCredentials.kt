@@ -9,6 +9,7 @@ import androidx.lifecycle.lifecycleScope
 import com.example.quizzit.data.database.QuizDatabase
 import com.example.quizzit.data.entity.UserEntity
 import com.example.quizzit.databinding.ActivityLoginCredentialsBinding
+import com.example.quizzit.utils.PreferenceManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -25,6 +26,7 @@ class LoginCredentials : AppCompatActivity() {
         setContentView(binding.root)
 
         db = QuizDatabase.getDatabase(this)
+        PreferenceManager.init(this)
 
         binding.loginButton.setOnClickListener {
 
@@ -69,6 +71,8 @@ class LoginCredentials : AppCompatActivity() {
     }
 
     private suspend fun loginOrRegisterUser(username: String, email: String) {
+        var userId = 0
+
         withContext(Dispatchers.IO) {
             var user = db.userDao().getUserByUsername(username)
 
@@ -78,7 +82,7 @@ class LoginCredentials : AppCompatActivity() {
                     username = username,
                     email = email
                 )
-                db.userDao().insertUser(newUser)
+                userId = db.userDao().insertUser(newUser).toInt()
 
                 withContext(Dispatchers.Main) {
                     Toast.makeText(
@@ -89,6 +93,7 @@ class LoginCredentials : AppCompatActivity() {
                 }
             } else {
                 // Existing user - login
+                userId = user.userId
                 withContext(Dispatchers.Main) {
                     Toast.makeText(
                         this@LoginCredentials,
@@ -98,6 +103,13 @@ class LoginCredentials : AppCompatActivity() {
                 }
             }
         }
+
+        // ✅ Save login info to SharedPreferences
+        PreferenceManager.saveLoginInfo(
+            username = username,
+            userId = userId,
+            email = email
+        )
 
         // Navigate to MainActivity
         withContext(Dispatchers.Main) {
