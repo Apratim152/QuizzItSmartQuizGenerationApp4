@@ -44,7 +44,7 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        // Navigate to Leaderboard
+        // Navigate to Global Leaderboard (Firebase)
         binding.btnLeaderboard.setOnClickListener {
             val intent = Intent(this, LeaderboardActivity::class.java)
             intent.putExtra("USERNAME", username)

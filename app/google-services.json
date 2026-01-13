@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "280131762332",
+    "project_id": "quizzit-276be",
+    "storage_bucket": "quizzit-276be.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:280131762332:android:2b8b332d2f3524c48ad559",
+        "android_client_info": {
+          "package_name": "com.example.quizzit"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBOCJ_aF-7umFte-Xar6lcDvV8mD4SeWGk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

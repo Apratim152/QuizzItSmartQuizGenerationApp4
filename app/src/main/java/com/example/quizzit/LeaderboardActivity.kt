@@ -1,23 +1,23 @@
 package com.example.quizzit
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.quizzit.ui.LeaderboardAdapter
-import com.example.quizzit.data.database.QuizDatabase
-import com.example.quizzit.data.entity.UserEntity
+import com.example.quizzit.firebase.FirebaseLeaderboardRepository
+import com.example.quizzit.ui.FirebaseLeaderboardAdapter
 import com.example.quizzit.databinding.ActivityLeaderboardBinding
-import kotlinx.coroutines.Dispatchers
+import com.example.quizzit.utils.PreferenceManager
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class LeaderboardActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityLeaderboardBinding
-    private lateinit var db: QuizDatabase
-    private lateinit var adapter: LeaderboardAdapter
+    private lateinit var adapter: FirebaseLeaderboardAdapter
+    private val fbLeaderboardRepo = FirebaseLeaderboardRepository()
     private var currentUsername: String = "User"
     private var sortType: SortType = SortType.XP
 
@@ -30,12 +30,12 @@ class LeaderboardActivity : AppCompatActivity() {
         binding = ActivityLeaderboardBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        db = QuizDatabase.getDatabase(this)
+        PreferenceManager.init(this)
         currentUsername = intent.getStringExtra("USERNAME") ?: "User"
 
         setupRecyclerView()
         setupSortButtons()
-        loadLeaderboard(sortType)
+        loadGlobalLeaderboard()
 
         binding.backButton.setOnClickListener {
             finish()
@@ -43,7 +43,7 @@ class LeaderboardActivity : AppCompatActivity() {
     }
 
     private fun setupRecyclerView() {
-        adapter = LeaderboardAdapter(currentUsername)
+        adapter = FirebaseLeaderboardAdapter(currentUsername)
         binding.leaderboardRecyclerView.apply {
             layoutManager = LinearLayoutManager(this@LeaderboardActivity)
             adapter = this@LeaderboardActivity.adapter
@@ -54,19 +54,19 @@ class LeaderboardActivity : AppCompatActivity() {
         binding.sortByXpButton.setOnClickListener {
             sortType = SortType.XP
             updateSortButtonStates()
-            loadLeaderboard(sortType)
+            loadGlobalLeaderboard()
         }
 
         binding.sortByScoreButton.setOnClickListener {
             sortType = SortType.AVERAGE_SCORE
             updateSortButtonStates()
-            loadLeaderboard(sortType)
+            loadByAverageScore()
         }
 
         binding.sortByQuizzesButton.setOnClickListener {
             sortType = SortType.QUIZZES_COMPLETED
             updateSortButtonStates()
-            loadLeaderboard(sortType)
+            loadGlobalLeaderboard()
         }
     }
 
@@ -84,28 +84,55 @@ class LeaderboardActivity : AppCompatActivity() {
         }
     }
 
-    private fun loadLeaderboard(type: SortType) {
+    private fun loadGlobalLeaderboard() {
         binding.progressBar.visibility = View.VISIBLE
         binding.leaderboardRecyclerView.visibility = View.GONE
 
         lifecycleScope.launch {
-            val users = withContext(Dispatchers.IO) {
-                when (type) {
-                    SortType.XP -> db.userDao().getAllUsersByXP()
-                    SortType.AVERAGE_SCORE -> db.userDao().getAllUsersByAverageScore()
-                    SortType.QUIZZES_COMPLETED -> db.userDao().getAllUsersByQuizzesCompleted()
+            fbLeaderboardRepo.getGlobalLeaderboard(100)
+                .onSuccess { entries ->
+                    binding.progressBar.visibility = View.GONE
+                    binding.leaderboardRecyclerView.visibility = View.VISIBLE
+
+                    if (entries.isEmpty()) {
+                        binding.emptyStateText?.visibility = View.VISIBLE
+                    } else {
+                        binding.emptyStateText?.visibility = View.GONE
+                        adapter.submitList(entries)
+                    }
+                    Log.d("Firebase", "✅ Loaded ${entries.size} users")
                 }
-            }
+                .onFailure { error ->
+                    Log.e("Firebase", "Error: ${error.message}")
+                    binding.progressBar.visibility = View.GONE
+                    Toast.makeText(
+                        this@LeaderboardActivity,
+                        "Error loading leaderboard: ${error.message}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+        }
+    }
 
-            binding.progressBar.visibility = View.GONE
-            binding.leaderboardRecyclerView.visibility = View.VISIBLE
+    private fun loadByAverageScore() {
+        binding.progressBar.visibility = View.VISIBLE
+        binding.leaderboardRecyclerView.visibility = View.GONE
 
-            if (users.isEmpty()) {
-                binding.emptyStateText.visibility = View.VISIBLE
-            } else {
-                binding.emptyStateText.visibility = View.GONE
-                adapter.submitList(users)
-            }
+        lifecycleScope.launch {
+            fbLeaderboardRepo.getLeaderboardByAverageScore(100)
+                .onSuccess { entries ->
+                    binding.progressBar.visibility = View.GONE
+                    binding.leaderboardRecyclerView.visibility = View.VISIBLE
+                    adapter.submitList(entries)
+                }
+                .onFailure { error ->
+                    binding.progressBar.visibility = View.GONE
+                    Toast.makeText(
+                        this@LeaderboardActivity,
+                        "Error loading leaderboard",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
         }
     }
 }

@@ -208,6 +208,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="textUri"
+                        android:textColor="#000000"
                         android:maxLines="2" />
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
@@ -253,15 +254,31 @@
                     android:textColor="#3F3D56"
                     android:textStyle="bold" />
 
-                <Spinner
-                    android:id="@+id/spinnerDifficulty"
+                <FrameLayout
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
-                    android:entries="@array/difficulty_levels"
-                    android:padding="12dp"
-                    android:background="@android:drawable/editbox_background"
                     android:layout_marginTop="8dp"
-                    android:layout_marginBottom="16dp" />
+                    android:layout_marginBottom="16dp"
+                    android:background="@drawable/spinner_background">
+
+                    <Spinner
+                        android:id="@+id/spinnerDifficulty"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:entries="@array/difficulty_levels"
+                        android:padding="12dp"
+                        android:textColor="#000000" />
+
+                    <TextView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="center_vertical|end"
+                        android:layout_marginEnd="12dp"
+                        android:text="▼"
+                        android:textColor="#6C63FF"
+                        android:textSize="14sp"
+                        android:gravity="center" />
+                </FrameLayout>
 
                 <!-- Question Count -->
                 <com.google.android.material.textfield.TextInputLayout
@@ -285,6 +302,7 @@
                         android:layout_height="wrap_content"
                         android:inputType="number"
                         android:text="10"
+                        android:textColor="#000000"
                         android:maxLines="1" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -319,6 +337,7 @@
                         android:layout_height="wrap_content"
                         android:inputType="number"
                         android:text=""
+                        android:textColor="#000000"
                         android:maxLines="1" />
                 </com.google.android.material.textfield.TextInputLayout>
 

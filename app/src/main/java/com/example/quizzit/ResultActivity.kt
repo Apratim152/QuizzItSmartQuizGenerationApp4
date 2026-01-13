@@ -10,6 +10,9 @@ import androidx.lifecycle.lifecycleScope
 import com.example.quizzit.data.database.QuizDatabase
 import com.example.quizzit.databinding.ActivityResultBinding
 import com.example.quizzit.data.entity.Result
+import com.example.quizzit.firebase.FirebaseUserRepository
+import com.example.quizzit.utils.PreferenceManager
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -31,6 +34,7 @@ class ResultActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         db = QuizDatabase.getDatabase(this)
+        PreferenceManager.init(this)
 
         // Get data from Intent
         quizId = intent.getIntExtra("quizId", 0)
@@ -106,7 +110,7 @@ class ResultActivity : AppCompatActivity() {
                     db.resultDao().insertResult(result)
                     Log.d("ResultActivity", "Result saved to database")
 
-                    // 2. Update user stats
+                    // 2. Update user stats locally
                     val user = db.userDao().getUserByUsername(username)
                     if (user == null) {
                         Log.e("ResultActivity", "ERROR: User '$username' not found!")
@@ -139,6 +143,35 @@ class ResultActivity : AppCompatActivity() {
                     }
 
                     Log.d("ResultActivity", "✅ Stats updated successfully!")
+
+                    // 3. ✅ Sync to Firebase Realtime Database
+                    try {
+                        val firebaseUid = PreferenceManager.getFirebaseUid()
+                        Log.d("Firebase", "Firebase UID: $firebaseUid")
+
+                        if (firebaseUid.isNotEmpty()) {
+                            val fbUserRepo = FirebaseUserRepository()
+
+                            fbUserRepo.updateUserStats(
+                                userId = firebaseUid,
+                                xpEarned = xpEarned,
+                                score = score,
+                                quizzesCompleted = 1
+                            )
+                                .onSuccess {
+                                    Log.d("Firebase", "✅ Firebase leaderboard synced! XP: $xpEarned")
+                                }
+                                .onFailure { error ->
+                                    Log.e("Firebase", "Error syncing to Firebase: ${error.message}")
+                                    error.printStackTrace()
+                                }
+                        } else {
+                            Log.w("Firebase", "No Firebase UID found - user may not be authenticated")
+                        }
+                    } catch (e: Exception) {
+                        Log.e("Firebase", "Exception syncing to Firebase: ${e.message}")
+                        e.printStackTrace()
+                    }
                 }
 
                 // Show success message
